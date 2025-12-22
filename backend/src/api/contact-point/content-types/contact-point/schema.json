@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contact_points",
+  "info": {
+    "singularName": "contact-point",
+    "pluralName": "contact-points",
+    "displayName": "Contact Points"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Email": {
+      "type": "string"
+    }
+  }
+}

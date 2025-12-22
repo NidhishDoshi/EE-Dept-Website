@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "academicrules",
+  "info": {
+    "singularName": "academicrule",
+    "pluralName": "academicrules",
+    "displayName": "academicrule",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "grading": {
+      "type": "richtext"
+    },
+    "Media": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}

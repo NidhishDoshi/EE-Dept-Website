@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "peoples",
+  "info": {
+    "singularName": "people",
+    "pluralName": "peoples",
+    "displayName": "People"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Role": {
+      "type": "string"
+    },
+    "Name": {
+      "type": "string"
+    },
+    "Designation": {
+      "type": "string"
+    },
+    "Domain": {
+      "type": "string"
+    },
+    "Email": {
+      "type": "string"
+    },
+    "Website": {
+      "type": "string"
+    },
+    "Contact": {
+      "type": "string"
+    },
+    "Image": {
+      "type": "string"
+    }
+  }
+}

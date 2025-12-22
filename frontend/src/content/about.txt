@@ -1,0 +1,12 @@
+﻿Department Background and Vision:
+
+Established in 2016, the Department of Electrical Engineering (EE) at IIT Dharwad is one of the institute's foundational departments. It offers a comprehensive suite of academic programs, including a four-year B.Tech., a two-year M.Tech. (launched in 2024), and two research-intensive programs - M.S. (by Research) and Ph.D. - in Electrical Engineering.
+
+The Department of Electrical Engineering at IIT Dharwad is actively engaged in cutting-edge research across several principal thrust areas:
+- Power Systems and Power Electronics, including smart grids, renewable energy systems, and electric vehicles;
+- Control Systems, encompassing linear and nonlinear control, robotics, and automation;
+- Signal Processing, with focus on image processing, audio/video processing, and biomedical signal analysis;
+- Communication Systems, including wireless communications, 5G/6G networks, and IoT;
+- VLSI and Embedded Systems, emphasizing digital design, SoC design, and hardware architectures.
+
+The department is deeply committed to fostering innovation and impactful research. It maintains robust collaborations with leading academic institutions, government agencies, and industry partners.

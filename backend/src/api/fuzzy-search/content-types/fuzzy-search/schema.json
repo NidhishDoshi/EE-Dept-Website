@@ -1,0 +1,12 @@
+{
+  "collectionName": "fuzzy_searches",
+  "info": {
+    "singularName": "fuzzy-search",
+    "pluralName": "fuzzy-searches",
+    "displayName": "FuzzySearch"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {}
+}

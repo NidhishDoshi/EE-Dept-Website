@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "join_as_faculty_pages",
+  "info": {
+    "singularName": "join-as-faculty-page",
+    "pluralName": "join-as-faculty-pages",
+    "displayName": "JoinAsFacultyPage"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Level": {
+      "type": "integer"
+    },
+    "Title": {
+      "type": "string"
+    },
+    "Description": {
+      "type": "text"
+    }
+  }
+}

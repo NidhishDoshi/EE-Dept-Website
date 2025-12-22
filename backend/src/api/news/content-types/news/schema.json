@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "newss",
+  "info": {
+    "singularName": "news",
+    "pluralName": "newss",
+    "displayName": "news",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "date": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    }
+  }
+}

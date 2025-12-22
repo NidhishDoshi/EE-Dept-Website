@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_yeah_kvnks",
+  "info": {
+    "displayName": "kvnks",
+    "icon": "train"
+  },
+  "options": {},
+  "attributes": {
+    "sf": {
+      "type": "richtext"
+    },
+    "ht": {
+      "type": "string"
+    }
+  }
+}

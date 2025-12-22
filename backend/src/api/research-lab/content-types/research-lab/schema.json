@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "research_labs",
+  "info": {
+    "singularName": "research-lab",
+    "pluralName": "research-labs",
+    "displayName": "ResearchLab"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Type": {
+      "type": "string"
+    },
+    "Name": {
+      "type": "string"
+    },
+    "Picture": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

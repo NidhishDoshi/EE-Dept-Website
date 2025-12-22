@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "admissions",
+  "info": {
+    "singularName": "admission",
+    "pluralName": "admissions",
+    "displayName": "admission "
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    }
+  }
+}

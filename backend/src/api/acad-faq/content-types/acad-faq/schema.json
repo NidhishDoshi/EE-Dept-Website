@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "acad_faqs",
+  "info": {
+    "singularName": "acad-faq",
+    "pluralName": "acad-faqs",
+    "displayName": "Acad-Faq"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Question": {
+      "type": "string"
+    },
+    "Answer": {
+      "type": "text"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "talk_and_events",
+  "info": {
+    "singularName": "talk-and-event",
+    "pluralName": "talk-and-events",
+    "displayName": "Talk and event",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Speaker": {
+      "type": "string"
+    },
+    "designation": {
+      "type": "string"
+    },
+    "venue": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "sortingDate": {
+      "type": "datetime"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+@import "tailwindcss";
+@import "flowbite";
+
+@theme {
+  /* Primary Purple Color */
+  --color-primary-50: #f5e6ff;
+  --color-primary-100: #e6ccf7;
+  --color-primary-200: #cc99ef;
+  --color-primary-300: #b366e7;
+  --color-primary-400: #9933df;
+  --color-primary-500: #550886;
+  --color-primary-600: #4a0775;
+  --color-primary-700: #3f0664;
+  --color-primary-800: #340553;
+  --color-primary-900: #290442;
+
+  /* Secondary Orange Color */
+  --color-secondary-50: #fff2e6;
+  --color-secondary-100: #ffe0c2;
+  --color-secondary-200: #ffc299;
+  --color-secondary-300: #ffa366;
+  --color-secondary-400: #ff8533;
+  --color-secondary-500: #ff630e;
+  --color-secondary-600: #e6590d;
+  --color-secondary-700: #cc4f0b;
+  --color-secondary-800: #b3450a;
+  --color-secondary-900: #993b08;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Inter", Roboto, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #550886;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3d0661;
+}
+
+/* PDF Viewer Styles */
+.pdf-viewer {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Make the PDF viewer responsive */
+@media (max-width: 768px) {
+  .pdf-viewer {
+    padding: 0;
+  }
+}
+
+/* Style for the Document component */
+.pdf-viewer .react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Style for the Page component */
+.pdf-viewer .react-pdf__Page {
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+/* Style for page canvas */
+.pdf-viewer .react-pdf__Page__canvas {
+  display: block;
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* Hide text layer in mobile view to improve performance */
+@media (max-width: 640px) {
+  .pdf-viewer .react-pdf__Page__textContent {
+    display: none;
+  }
+}
