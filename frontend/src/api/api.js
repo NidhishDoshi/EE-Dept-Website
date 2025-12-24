@@ -11,12 +11,12 @@ export const getNews = async () => {
 };
 
 export const getTalksAndEvents = async () => {
-  const { data } = await axiosInstance.get("/talk-and-events");
+  const { data } = await axiosInstance.get("/talk-and-events?populate=*");
   return data?.data;
 };
 
 export const getAboutPageData = async () => {
-  const { data } = await axiosInstance.get("/about-pages");
+  const { data } = await axiosInstance.get("/about-pages?populate=*");
   return data?.data;
 };
 
@@ -39,29 +39,18 @@ export const getAdmissionsInfo = async () => {
 };
 
 export const getPeopleInfo = async () => {
-  const { data } = await axiosInstance.get("/peoples?pagination[pageSize]=50");
+  const { data } = await axiosInstance.get("/peoples?populate=*&pagination[pageSize]=50");
 
   if (!data || !Array.isArray(data.data)) {
     console.error("Fetched data is not in the expected format:", data);
     return [];
   }
 
-  const getLastName = (fullName) => {
-    if (!fullName || typeof fullName !== "string") {
-      return "";
-    }
-    const parts = fullName.trim().split(" ");
-    return parts[parts.length - 1];
-  };
-
   const sortedData = [...data.data].sort((a, b) => {
-    const fullNameA = a?.Name;
-    const fullNameB = b?.Name;
+    const nameA = (a?.Name || "").toLowerCase();
+    const nameB = (b?.Name || "").toLowerCase();
 
-    const lastNameA = getLastName(fullNameA).toLowerCase();
-    const lastNameB = getLastName(fullNameB).toLowerCase();
-
-    return lastNameA.localeCompare(lastNameB);
+    return nameA.localeCompare(nameB);
   });
 
   return sortedData;

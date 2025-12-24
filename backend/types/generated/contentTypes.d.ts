@@ -389,6 +389,10 @@ export interface ApiAboutPageAboutPage extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Description: Schema.Attribute.Text;
+    Image: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -567,10 +571,15 @@ export interface ApiCarouselImagesCarouselImages
     draftAndPublish: true;
   };
   attributes: {
+    Button1Label: Schema.Attribute.String;
+    Button1Link: Schema.Attribute.String;
+    Button2Label: Schema.Attribute.String;
+    Button2Link: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Description: Schema.Attribute.String;
+    Description: Schema.Attribute.Text;
+    Heading: Schema.Attribute.String;
     Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -876,7 +885,6 @@ export interface ApiNewsNews extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    date: Schema.Attribute.String;
     description: Schema.Attribute.Text;
     link: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -893,6 +901,7 @@ export interface ApiNewsNews extends Struct.CollectionTypeSchema {
 export interface ApiPeoplePeople extends Struct.CollectionTypeSchema {
   collectionName: 'peoples';
   info: {
+    description: '';
     displayName: 'People';
     pluralName: 'peoples';
     singularName: 'people';
@@ -906,9 +915,10 @@ export interface ApiPeoplePeople extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Designation: Schema.Attribute.String;
-    Domain: Schema.Attribute.String;
+    Domain: Schema.Attribute.Text;
+    Education: Schema.Attribute.String;
     Email: Schema.Attribute.String;
-    Image: Schema.Attribute.String;
+    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -957,6 +967,7 @@ export interface ApiRecruiterRecruiter extends Struct.CollectionTypeSchema {
 export interface ApiResearchLabResearchLab extends Struct.CollectionTypeSchema {
   collectionName: 'research_labs';
   info: {
+    description: '';
     displayName: 'ResearchLab';
     pluralName: 'research-labs';
     singularName: 'research-lab';
@@ -976,7 +987,7 @@ export interface ApiResearchLabResearchLab extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     Name: Schema.Attribute.String;
-    Picture: Schema.Attribute.Media<'images'>;
+    Picture: Schema.Attribute.Media<'images', true>;
     publishedAt: Schema.Attribute.DateTime;
     Type: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -989,6 +1000,7 @@ export interface ApiResearchProjectResearchProject
   extends Struct.CollectionTypeSchema {
   collectionName: 'research_projects';
   info: {
+    description: '';
     displayName: 'ResearchProjects';
     pluralName: 'research-projects';
     singularName: 'research-project';
@@ -997,7 +1009,6 @@ export interface ApiResearchProjectResearchProject
     draftAndPublish: true;
   };
   attributes: {
-    Area: Schema.Attribute.String;
     CoPI: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1037,7 +1048,10 @@ export interface ApiTalkAndEventTalkAndEvent
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     date: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
     designation: Schema.Attribute.String;
+    eventStatus: Schema.Attribute.String;
+    Image: Schema.Attribute.Media<'images'>;
     link: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1045,6 +1059,7 @@ export interface ApiTalkAndEventTalkAndEvent
       'api::talk-and-event.talk-and-event'
     > &
       Schema.Attribute.Private;
+    Poster: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
     sortingDate: Schema.Attribute.DateTime;
     Speaker: Schema.Attribute.String;

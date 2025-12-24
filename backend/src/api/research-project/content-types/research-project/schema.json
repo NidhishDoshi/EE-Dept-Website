@@ -4,7 +4,8 @@
   "info": {
     "singularName": "research-project",
     "pluralName": "research-projects",
-    "displayName": "ResearchProjects"
+    "displayName": "ResearchProjects",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -14,9 +15,6 @@
       "type": "string"
     },
     "Title": {
-      "type": "string"
-    },
-    "Area": {
       "type": "string"
     },
     "Duration": {

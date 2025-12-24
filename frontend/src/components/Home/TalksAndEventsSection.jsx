@@ -3,6 +3,7 @@ import { useTalksAndEvents } from "../../hooks/useTalksAndEvents";
 import { Link } from "react-router-dom"; // ✅ Required for routing
 
 const TalkCard = ({
+  id,
   title,
   speaker,
   designation,
@@ -10,8 +11,12 @@ const TalkCard = ({
   time,
   date,
   description,
+  link
 }) => (
-  <div className="bg-white rounded-lg shadow-sm p-4 hover:shadow-lg transition-all duration-300 flex flex-col h-full border-l-4 border-primary-500 hover:border-secondary-500 hover:-translate-y-1">
+  <Link 
+    to={`/allTalksEvents#event-${id}`}
+    className="block bg-white rounded-lg shadow-sm p-4 hover:shadow-lg transition-all duration-300 border-l-4 border-primary-500 hover:border-secondary-500 hover:-translate-y-1 cursor-pointer"
+  >
     <h3 className="text-lg font-semibold text-gray-800 mb-2">
       <span className="italic">{title}</span>
     </h3>
@@ -26,13 +31,13 @@ const TalkCard = ({
     )}
     {venue && (
       <div className="mb-1">
-        <span className="text-primary-500 font-semibold">&#x1F4CD; Venue:</span>{" "}
+        <span className="text-primary-500 font-semibold">Venue:</span>{" "}
         {venue}
       </div>
     )}
     {time && (
       <div className="mb-1">
-        <span className="text-secondary-500 font-semibold">&#x23F0; Time:</span>{" "}
+        <span className="text-secondary-500 font-semibold">Date:</span>{" "}
         {time}
       </div>
     )}
@@ -41,8 +46,7 @@ const TalkCard = ({
         <span className="text-gray-600">{date}</span>
       </div>
     )}
-    {description && <div className="mt-2 font-semibold">{description}</div>}
-  </div>
+  </Link>
 );
 
 export const TalkLoading = () => {

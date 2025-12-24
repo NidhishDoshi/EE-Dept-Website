@@ -20,6 +20,7 @@ const Navbar = ({ closeMenu, isMobile = false }) => {
       dropdown: [
         { to: "/research/labs", label: "Labs" },
         { to: "/research/projects", label: "Projects" },
+        { to: "https://eecelabs.iitdh.ac.in/", label: "Teaching Labs", external: true },
       ],
     },
     {
@@ -30,7 +31,7 @@ const Navbar = ({ closeMenu, isMobile = false }) => {
     { to: "/join-as-faculty", label: "Join Us" },
     { to: "/contact", label: "Contact" },
     {
-      href: "https://sites.google.com/iitdh.ac.in/cse/home",
+      href: "http://localhost:1337/admin",
       label: "Internal",
       external: true,
     },

@@ -17,9 +17,6 @@
     "description": {
       "type": "text"
     },
-    "date": {
-      "type": "string"
-    },
     "link": {
       "type": "string"
     }

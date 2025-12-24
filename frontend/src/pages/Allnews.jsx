@@ -1,25 +1,35 @@
 import { v4 } from "uuid";
 import { useNews } from "../hooks/useNews";
 
-const NewsCard = ({ title, date, description, link }) => (
-  <button
-    type="button"
-    onClick={() => {
-      if (link) window.open(link, "_blank");
-    }}
+const NewsCard = ({ title, description, link }) => (
+  <div
     className="
       w-full
-      cursor-pointer bg-white rounded-xl p-6 transition-all duration-300
+      bg-white rounded-xl p-6 transition-all duration-300
       transform hover:-translate-y-2 shadow-md hover:shadow-xl
-      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-      text-left flex flex-col h-full border-l-4 border-secondary-500 hover:border-primary-500
+      flex flex-col h-full border-l-4 border-secondary-500 hover:border-primary-500
     "
   >
     {/* The 'line-clamp-2' class has been removed to prevent trimming the title */}
     <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-    <p className="text-sm text-secondary-500 font-medium mt-2">{date}</p>
-    <p className="text-gray-600 text-base mt-4 flex-grow">{description}</p>
-  </button>
+    <div
+      className="text-gray-600 text-base mt-4 flex-grow whitespace-pre-wrap"
+      dangerouslySetInnerHTML={{ __html: description }}
+    />
+    {link && (
+      <div className="mt-4 text-sm text-gray-600">
+        For more details,{" "}
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-orange-500 hover:text-orange-600 font-medium no-underline"
+        >
+          Click Here
+        </a>
+      </div>
+    )}
+  </div>
 );
 
 const NewsLoading = () => (

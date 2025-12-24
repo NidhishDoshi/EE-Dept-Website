@@ -55,20 +55,21 @@ const Gallery = () => {
       <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-6 text-center">Gallery</h2>
 
       {galleryImages && galleryImages.length > 0 ? (
-        <div className="flex overflow-x-auto space-x-4 p-4 scrollbar-thin scrollbar-thumb-indigo-600 scrollbar-track-gray-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
           {galleryImages.map((imageObj, index) => (
             <button
               type="button"
               key={imageObj.url}
-              className="flex-shrink-0 w-64 h-44 sm:w-80 sm:h-56 cursor-pointer"
+              className="w-full aspect-[4/3] cursor-pointer group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
               onClick={() => setSelectedImageIndex(index)}
             >
               <img
                 src={imageObj.url}
                 alt={imageObj.description || `Gallery image ${index + 1}`}
                 loading="lazy"
-                className="w-full h-full object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
             </button>
           ))}
         </div>

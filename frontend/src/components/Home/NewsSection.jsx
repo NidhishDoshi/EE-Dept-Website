@@ -1,19 +1,30 @@
+import { useState, useEffect, useRef } from "react";
 import { v4 } from "uuid";
 import { useNews } from "../../hooks/useNews";
 import { Link } from "react-router-dom"; // ← make sure this is imported
 
 const NewsCard = ({ title, date, description, link }) => (
-  <button
-    type="button"
-    onClick={() => {
-      if (link) window.open(link, "_blank");
-    }}
-    className="w-full cursor-pointer bg-white rounded-lg shadow-sm p-4 hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left border-l-4 border-secondary-500 hover:border-primary-500 hover:-translate-y-1"
-  >
+  <div className="w-full bg-white rounded-lg shadow-sm p-4 hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left border-l-4 border-secondary-500 hover:border-primary-500 hover:-translate-y-1">
     <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
     <p className="text-sm text-secondary-500 font-medium mt-1">{date}</p>
-    <p className="text-gray-600 text-sm mt-2 flex-grow">{description}</p>
-  </button>
+    <div
+      className="text-gray-600 text-sm mt-2 flex-grow whitespace-pre-wrap"
+      dangerouslySetInnerHTML={{ __html: description }}
+    />
+    {link && (
+      <div className="mt-3 text-xs text-gray-600">
+        For more details,{" "}
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-orange-500 hover:text-orange-600 font-medium underline decoration-orange-500/30 hover:decoration-orange-600"
+        >
+          click here
+        </a>
+      </div>
+    )}
+  </div>
 );
 
 const NewsLoading = () => (
@@ -26,7 +37,43 @@ const NewsLoading = () => (
 
 export default function NewsSection() {
   const { data: news, isLoading: newsLoading, error: newsError } = useNews();
-  const topNews = news?.slice(0, 3); // show only top 3
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const timeoutRef = useRef(null);
+
+  const shouldAnimate = news && news.length > 3;
+  // Create buffer: [...news, ...first 3 items]
+  const extendedNews = shouldAnimate
+    ? [...news, ...news.slice(0, 3)]
+    : news || [];
+
+  useEffect(() => {
+    if (!shouldAnimate) return;
+
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      setCurrentIndex((prev) => prev + 1);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [shouldAnimate]);
+
+  useEffect(() => {
+    if (!shouldAnimate) return;
+
+    // If we reached the end of the original list (start of buffer)
+    if (currentIndex === news.length) {
+      // Wait for the transition to finish (e.g., 500ms)
+      timeoutRef.current = setTimeout(() => {
+        setIsTransitioning(false); // Disable transition for instant snap
+        setCurrentIndex(0); // Snap back to 0
+      }, 500); // Match CSS duration
+    }
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [currentIndex, news?.length, shouldAnimate]);
 
   return (
     <div>
@@ -42,7 +89,7 @@ export default function NewsSection() {
       </div>
 
       {/* News Content */}
-      <div className="space-y-4">
+      <div className="min-h-[400px]">
         {newsLoading ? (
           <NewsLoading />
         ) : newsError ? (
@@ -50,10 +97,33 @@ export default function NewsSection() {
             <p>Error loading news: {newsError?.message}</p>
             <p className="text-sm mt-2">Please try refreshing the page.</p>
           </div>
-        ) : topNews?.length > 0 ? (
-          topNews.map((item) => (
-            <NewsCard key={`news-${item?.id || v4()}`} {...item} />
-          ))
+        ) : extendedNews.length > 0 ? (
+          <div className="flex flex-col">
+            {extendedNews.map((item, index) => {
+              // Only render items up to the visible window
+              if (index > currentIndex + 2) return null;
+
+              const isCollapsed = index < currentIndex;
+
+              return (
+                <div
+                  key={`${item.id}-${index}`}
+                  className={`grid transition-all ease-in-out ${
+                    isTransitioning ? "duration-500" : "duration-0"
+                  }`}
+                  style={{
+                    gridTemplateRows: isCollapsed ? "0fr" : "1fr",
+                    opacity: isCollapsed ? 0 : 1,
+                    marginBottom: isCollapsed ? 0 : "1rem",
+                  }}
+                >
+                  <div className="overflow-hidden">
+                    <NewsCard {...item} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <p className="text-gray-500">No news available at the moment.</p>
         )}

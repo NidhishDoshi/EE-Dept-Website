@@ -4,18 +4,19 @@ export default function FacultyCard({
   title,
   image,
   expertise,
+  education,
   email,
   phone,
   website,
 }) {
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col h-full">
-      <div className="w-48 h-48 mx-auto mt-4 mb-2 bg-gray-100 flex items-center justify-center rounded-lg overflow-hidden">
+      <div className="w-48 h-48 mx-auto mt-4 mb-2 flex items-center justify-center overflow-hidden">
         {image ? (
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain rounded-lg"
             loading="lazy"
             onError={(e) => {
               e.target.onerror = null; // Prevent infinite fallback loop
@@ -47,10 +48,40 @@ export default function FacultyCard({
       <div className="p-4 flex-grow">
         <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
         <p className="text-indigo-600 font-medium">{title}</p>
+        {education && (
+          <div className="mt-1 text-sm text-gray-500">
+            {education.includes("\n") || education.includes("- ") ? (
+              <div className="space-y-1">
+                {education.split("\n").map((line, i) => {
+                  const trimmed = line.trim();
+                  if (!trimmed) return null;
+                  const content = trimmed.replace(/^[-*•]\s*/, "");
+                  return <div key={i}>{content}</div>;
+                })}
+              </div>
+            ) : (
+              education
+            )}
+          </div>
+        )}
         {expertise && (
           <div className="mt-2">
             <p className="text-sm text-gray-700 font-medium">Research Areas</p>
-            <p className="text-sm text-gray-600">{expertise}</p>
+            <div className="text-sm text-gray-600">
+              {expertise.includes("\n") || expertise.includes("- ") ? (
+                <ul className="list-disc pl-4 space-y-1">
+                  {expertise.split("\n").map((line, i) => {
+                    const trimmed = line.trim();
+                    if (!trimmed) return null;
+                    // Remove existing bullet if present
+                    const content = trimmed.replace(/^[-*•]\s*/, "");
+                    return <li key={i}>{content}</li>;
+                  })}
+                </ul>
+              ) : (
+                expertise
+              )}
+            </div>
           </div>
         )}
       </div>

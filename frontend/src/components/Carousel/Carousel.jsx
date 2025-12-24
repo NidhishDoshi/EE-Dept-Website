@@ -2,6 +2,19 @@ import { useEffect, useState } from "react";
 import useCarouselImages from "../../hooks/useCarouselImages";
 import GlobalError from "../GlobalError";
 
+// Import Google Fonts
+if (typeof document !== 'undefined') {
+  const link1 = document.createElement('link');
+  link1.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap';
+  link1.rel = 'stylesheet';
+  document.head.appendChild(link1);
+  
+  const link2 = document.createElement('link');
+  link2.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap';
+  link2.rel = 'stylesheet';
+  document.head.appendChild(link2);
+}
+
 const CustomCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
@@ -76,32 +89,58 @@ const CustomCarousel = () => {
     >
       {/* Carousel wrapper with a 3:1 aspect ratio */}
       <div className="relative w-full aspect-[3/1] overflow-hidden">
-        {images.map((src, index) => (
+        {images.map((slide, index) => (
           <div
-            key={src}
+            key={slide.id}
             className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
               index === currentIndex ? "opacity-100" : "opacity-0"
             }`}
           >
             <img
-              src={src}
-              alt={`Slide ${index + 1}`}
-              className="absolute w-full h-full object-cover"
-              style={{
-                transform: "translate(-50%, -50%)",
-                top: "50%",
-                left: "50%",
-              }}
+              src={slide.url}
+              alt={slide.heading || `Slide ${index + 1}`}
+              className="absolute w-full h-full object-fill"
             />
+            {/* Overlay Content */}
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent flex flex-col justify-center items-start px-12 sm:px-20">
+              {slide.heading && (
+                <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-2 md:mb-4 drop-shadow-lg text-orange-600 tracking-tight leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  {slide.heading}
+                </h2>
+              )}
+              {slide.description && (
+                <p className="text-sm md:text-lg lg:text-xl mb-4 md:mb-8 max-w-xl drop-shadow-md text-gray-900 font-normal bg-white/40 p-4 rounded-lg backdrop-blur-sm whitespace-pre-wrap leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  {slide.description}
+                </p>
+              )}
+              <div className="flex gap-3 md:gap-4">
+                {slide.button1?.label && (
+                  <a
+                    href={slide.button1.link}
+                    className="bg-orange-600 hover:bg-orange-700 text-white text-sm md:text-base px-4 py-2 md:px-6 md:py-3 rounded-md font-semibold transition-colors shadow-lg"
+                  >
+                    {slide.button1.label}
+                  </a>
+                )}
+                {slide.button2?.label && (
+                  <a
+                    href={slide.button2.link}
+                    className="bg-orange-600 hover:bg-orange-700 text-white text-sm md:text-base px-4 py-2 md:px-6 md:py-3 rounded-md font-semibold transition-colors shadow-lg"
+                  >
+                    {slide.button2.label}
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Slider indicators */}
       <div className="absolute z-30 flex -translate-x-1/2 space-x-2 sm:space-x-3 rtl:space-x-reverse bottom-4 left-1/2">
-        {images.map((src, index) => (
+        {images.map((slide, index) => (
           <button
-            key={`slide-${src}`}
+            key={`indicator-${slide.id}`}
             type="button"
             className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${
               currentIndex === index ? "bg-white" : "bg-gray-300"

@@ -1,9 +1,10 @@
 import React from "react";
 import useAboutData from "../hooks/useAboutData";
+import { constant } from "../constant/constant";
 
 const AboutData = () => {
   const { data: aboutData, isLoading, isError, error } = useAboutData();
-
+  console.log(aboutData);
   if (isLoading) {
     return (
       <div className="py-6 px-4 md:px-8">
@@ -41,11 +42,34 @@ const AboutData = () => {
     );
   }
 
+  // Sort data by createdAt
+  const sortedData = [...aboutData].sort((a, b) => {
+    const dateA = new Date(a.attributes?.createdAt || a.createdAt || 0);
+    const dateB = new Date(b.attributes?.createdAt || b.createdAt || 0);
+    return dateA - dateB;
+  });
+
   return (
     <div className="space-y-8">
-      {aboutData.map((section) => {
+      {sortedData.map((section) => {
         // 1. Safely access attributes
         const attrs = section.attributes || section;
+
+        // Extract video content from description
+        let description = attrs.Description || "";
+        let videoContent = null;
+        const videoRegex = /<youtube-video>(.*?)<\/youtube-video>/s;
+        const match = description.match(videoRegex);
+
+        if (match) {
+          videoContent = match[1];
+          // Fix YouTube URLs to use embed format to avoid X-Frame-Options errors
+          videoContent = videoContent.replace(
+            /src=["'](?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^"&?\/]+)(?:[&?][^"']*)?["']/g,
+            'src="https://www.youtube.com/embed/$1"'
+          );
+          description = description.replace(videoRegex, "");
+        }
 
         return (
           <section
@@ -57,14 +81,67 @@ const AboutData = () => {
               {attrs.Title}
             </h2>
 
-            {/* 3. Description (Simple Text) */}
-            {/* 'whitespace-pre-line' ensures line breaks from Strapi are preserved */}
-            <div className="text-gray-600 leading-relaxed whitespace-pre-line">
-              {attrs.Description || (
-                <span className="text-gray-400 italic">
-                  No description available.
-                </span>
-              )}
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* 3. Description (HTML Content) */}
+              <div
+                className="flex-1 text-gray-600 leading-relaxed whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    description ||
+                    '<span class="text-gray-400 italic">No description available.</span>',
+                }}
+              />
+
+              {/* Right Side: Video & Images */}
+              {(() => {
+                const images = Array.isArray(attrs.Image)
+                  ? attrs.Image
+                  : attrs.Image?.data;
+
+                const hasImages = images && images.length > 0;
+                const hasVideo = !!videoContent;
+
+                if (!hasImages && !hasVideo) return null;
+
+                return (
+                  <div className="lg:w-1/4 flex-shrink-0 flex flex-col gap-6">
+                    {/* Video */}
+                    {hasVideo && (
+                      <div
+                        className="w-full rounded-lg overflow-hidden shadow-md [&_iframe]:w-full [&_iframe]:aspect-video"
+                        dangerouslySetInnerHTML={{ __html: videoContent }}
+                      />
+                    )}
+
+                    {/* Images */}
+                    {hasImages && (
+                      <div className="grid grid-cols-1 gap-4">
+                        {images.map((img) => {
+                          const imgUrl = img.attributes?.url || img.url;
+                          const altText =
+                            img.attributes?.alternativeText ||
+                            img.alternativeText ||
+                            attrs.Title;
+                          const fullImgUrl = imgUrl
+                            ? `${constant.baseURL.replace("/api", "")}${imgUrl}`
+                            : null;
+
+                          if (!fullImgUrl) return null;
+
+                          return (
+                            <img
+                              key={img.id}
+                              src={fullImgUrl}
+                              alt={altText}
+                              className="rounded-lg shadow-md w-full h-auto object-cover"
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </section>
         );
@@ -77,7 +154,7 @@ const About = () => {
   return (
     <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen">
       <div className="mb-8 pb-4 border-b border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-900">About Us</h1>
+        <h1 className="text-3xl font-bold text-gray-900">About EECE, IIT Dharwad</h1>
         <p className="mt-2 text-sm text-gray-500">
           Learn more about our department and mission.
         </p>

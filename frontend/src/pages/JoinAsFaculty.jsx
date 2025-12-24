@@ -1,69 +1,53 @@
-import useJoinAsFacultyData from "../hooks/useJoinAsFacultyData";
-import GlobalError from "../components/GlobalError";
-import Loading from "../components/Loading";
-
-// Static "How to Apply" card data
-const howToApplyCard = {
-  id: "how-to-apply",
-  title: "How to Apply",
-  description:
-    "Click on the button below to get updated application instructions and application form",
-};
-
-const JoinAsFacultyData = () => {
-  const { data: apiData, isLoading, isError, error } = useJoinAsFacultyData();
-
-  if (isLoading) return <Loading />;
-  if (isError) return <GlobalError error={error} />;
-
-  // Combine API data with the static "How to Apply" card
-  const allData = [...(apiData || []), howToApplyCard];
-
-  return (
-    <div className="space-y-6">
-      {allData.map((section) => (
-        <section
-          key={section.id || section.documentId}
-          className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-primary-500"
-        >
-          <h2 className="text-2xl font-semibold text-primary-500 mb-4">
-            {section.Title || section.title}
-          </h2>
-          <div className="space-y-4">
-            <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-              {section.Description || section.description}
-            </p>
-            {(section.title === "How to Apply" ||
-              section.Title === "How to Apply") && (
-              <div className="text-center mt-6">
-                <a
-                  href="https://www.iitdh.ac.in/faculty-recruitment"
-                  className="inline-block bg-secondary-500 text-white px-8 py-3 rounded-lg hover:bg-secondary-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl text-lg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Apply Now →
-                </a>
-              </div>
-            )}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
-};
+import { Link } from "react-router-dom";
 
 const JoinAsFaculty = () => {
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-primary-500 mb-4">
-        Join as Faculty
-      </h1>
-      <p className="text-gray-600 mb-8 text-lg">
-        Build your academic career at IIT DHARWAD's Department of Computer
-        Science and Engineering
-      </p>
-      <JoinAsFacultyData />
+      {/* Faculty Positions Section */}
+      <section className="mb-12">
+        <h1 className="text-4xl font-bold text-secondary-500 mb-6">
+          Faculty Positions
+        </h1>
+        <p className="text-gray-700 text-lg mb-6 leading-relaxed">
+          The department is actively looking for candidates for prospective faculty applicants. If you are looking for a faculty position at the Dept of EECE, please use the link below:
+        </p>
+        <a
+          href="https://www.iitdh.ac.in/faculty-recruitment"
+          className="inline-block bg-secondary-500 text-white px-8 py-3 rounded-lg hover:bg-secondary-600 transition-all duration-300 font-semibold shadow-md hover:shadow-lg text-lg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Faculty Recruitment
+        </a>
+      </section>
+
+      {/* Research Positions Section */}
+      <section>
+        <h2 className="text-4xl font-bold text-secondary-500 mb-6">
+          Research Positions
+        </h2>
+        <p className="text-gray-700 text-lg mb-6 leading-relaxed">
+          From time to time we have openings for Research Associates (RA), JRF, Project Staff positions etc. The appointments for these positions are against advertisements announced on the institute website at the following link:
+        </p>
+        <a
+          href="https://www.iitdh.ac.in/other-recruitments"
+          className="inline-block bg-secondary-500 text-white px-8 py-3 rounded-lg hover:bg-secondary-600 transition-all duration-300 font-semibold shadow-md hover:shadow-lg text-lg mb-6"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Research Staff Positions
+        </a>
+        <p className="text-gray-700 text-lg leading-relaxed">
+          In addition, faculty may sometimes have ad-hoc positions. For this please reach out to the faculty members directly over email. The details of faculty members can be found{" "}
+          <Link 
+            to="/people" 
+            className="text-secondary-500 hover:text-secondary-600 font-semibold hover:underline"
+          >
+            here
+          </Link>
+          .
+        </p>
+      </section>
     </div>
   );
 };

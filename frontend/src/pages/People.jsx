@@ -3,6 +3,9 @@ import { lazy, Suspense, useMemo } from "react";
 import GlobalError from "../components/GlobalError";
 import Loading from "../components/Loading";
 import usePeopleInfo from "../hooks/usePeopleInfo";
+import { constant } from "../constant/constant";
+
+const STRAPI_ROOT = constant.baseURL.replace("/api", "");
 
 // Lazy load People section components
 const NavCard = lazy(() => import("../components/Academics/NavCard"));
@@ -13,8 +16,8 @@ const FacultySection = lazy(() =>
   import("../components/People/FacultySection")
 );
 const StaffSection = lazy(() => import("../components/People/StaffSection"));
-const FormerMemberSection = lazy(() =>
-  import("../components/People/FormerMemberSection")
+const MSStudentSection = lazy(() =>
+  import("../components/People/MSStudentSection")
 );
 const PhDScholarSection = lazy(() =>
   import("../components/People/PhDScholarSection")
@@ -46,9 +49,9 @@ function QuickNavigation() {
         viewText={"View Members"}
       />
       <NavCard
-        title="Former Members"
+        title="MS Students"
         icon={<i className="fas fa-user-graduate"></i>}
-        targetId="former-members"
+        targetId="ms-students"
         viewText={"View Members"}
       />
       <NavCard
@@ -69,6 +72,23 @@ function QuickNavigation() {
 
 const getPeopleData = (data) => {
   return data.map((person) => {
+    let role = person.Role;
+
+    // Normalize roles to handle variations in data entry
+    if (role === "Faculty") role = "Faculty Members";
+    if (role === "Staff") role = "Staff Members";
+
+    let imageUrl = null;
+    if (person.Image) {
+        // Handle both flattened and nested structures just in case
+        const imgData = person.Image.data ? person.Image.data.attributes : person.Image;
+        if (imgData && imgData.url) {
+             imageUrl = imgData.url.startsWith("http") 
+            ? imgData.url 
+            : `${STRAPI_ROOT}${imgData.url}`;
+        }
+    }
+
     const base = {
       id: person.documentId,
       name: person.Name,
@@ -76,24 +96,20 @@ const getPeopleData = (data) => {
       email: person.Email,
       phone: person.Contact,
       website: person.Website,
-      image: person.Image,
-      role: person.Role,
+      image: imageUrl,
+      role: role,
+      education: person.Education,
     };
 
-    switch (person.Role) {
+    switch (role) {
       case "Faculty Members":
       case "Department Leadership":
       case "PhD Scholars":
       case "Graduated Scholars":
+      case "MS":
         return { ...base, expertise: person.Domain };
       case "Staff Members":
         return { ...base, office: person.Domain };
-      case "Former Members":
-        return {
-          ...base,
-          period: person.Period,
-          currentAffiliation: person.CurrentAffiliation,
-        };
       default:
         return base;
     }
@@ -122,7 +138,7 @@ const People = () => {
   const leadership = filterByRole("Department Leadership");
   const facultyMembers = [...leadership, ...filterByRole("Faculty Members")];
   const staffMembers = filterByRole("Staff Members");
-  const formerMembers = filterByRole("Former Members");
+  const msStudents = filterByRole("MS");
   const phdScholars = filterByRole("PHD");
   const GraduatedScholars = filterByRole("Graduated Scholars");
 
@@ -132,7 +148,7 @@ const People = () => {
       <div id="people-top" className="mb-10">
         <h1 className="text-3xl font-bold text-primary-500 mb-3">People</h1>
         <p className="text-gray-600 text-lg">
-          Meet the faculty, staff, and former members of the Department of
+          Meet the faculty, staff, and students of the Department of
           Electrical Engineering.
         </p>
       </div>
@@ -150,9 +166,9 @@ const People = () => {
       <Suspense fallback={fallback}>
         <StaffSection staffMembers={staffMembers} />
       </Suspense>
-      {/* Former Members Section */}
+      {/* MS Students Section */}
       <Suspense fallback={fallback}>
-        <FormerMemberSection formerMembers={formerMembers} />
+        <MSStudentSection msStudents={msStudents} />
       </Suspense>
       {/* PHD Scholars Section */}
       <Suspense fallback={fallback}>

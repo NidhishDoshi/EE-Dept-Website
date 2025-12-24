@@ -4,7 +4,8 @@
   "info": {
     "singularName": "research-lab",
     "pluralName": "research-labs",
-    "displayName": "ResearchLab"
+    "displayName": "ResearchLab",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -18,9 +19,11 @@
     },
     "Picture": {
       "type": "media",
-      "multiple": false,
+      "multiple": true,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "description": {
       "type": "text"

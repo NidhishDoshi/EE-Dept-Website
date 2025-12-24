@@ -13,8 +13,22 @@ export default function useCarouselImages() {
         .filter((item) => item.Image && item.Image.url)
         .map((item) => {
           const url = item.Image.url;
-          // If URL is relative, prepend Strapi base URL
-          return url.startsWith("http") ? url : `${STRAPI_URL}${url}`;
+          const fullUrl = url.startsWith("http") ? url : `${STRAPI_URL}${url}`;
+          
+          return {
+            id: item.documentId,
+            url: fullUrl,
+            heading: item.Heading,
+            description: item.Description,
+            button1: {
+              label: item.Button1Label,
+              link: item.Button1Link
+            },
+            button2: {
+              label: item.Button2Label,
+              link: item.Button2Link
+            }
+          };
         });
     },
     staleTime: 5 * 60 * 1000,

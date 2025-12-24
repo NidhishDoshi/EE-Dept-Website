@@ -17,7 +17,6 @@ const transformNews = (news) =>
 		?.sort((a, b) => new Date(b.date) - new Date(a.date))
 		.map((item) => ({
 			title: item.Title || "",
-			date: formatDate(item.date),
 			description: item.description || "",
 			link: item.link || null,
 		})) || [];

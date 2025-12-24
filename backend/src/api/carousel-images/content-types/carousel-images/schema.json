@@ -21,6 +21,21 @@
       "multiple": false
     },
     "Description": {
+      "type": "text"
+    },
+    "Heading": {
+      "type": "string"
+    },
+    "Button1Label": {
+      "type": "string"
+    },
+    "Button1Link": {
+      "type": "string"
+    },
+    "Button2Label": {
+      "type": "string"
+    },
+    "Button2Link": {
       "type": "string"
     }
   }

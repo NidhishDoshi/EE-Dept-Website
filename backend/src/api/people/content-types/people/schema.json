@@ -4,7 +4,8 @@
   "info": {
     "singularName": "people",
     "pluralName": "peoples",
-    "displayName": "People"
+    "displayName": "People",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -19,8 +20,11 @@
     "Designation": {
       "type": "string"
     },
+    "Education": {
+      "type": "text"
+    },
     "Domain": {
-      "type": "string"
+      "type": "text"
     },
     "Email": {
       "type": "string"
@@ -32,6 +36,17 @@
       "type": "string"
     },
     "Image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "Education": {
       "type": "string"
     }
   }

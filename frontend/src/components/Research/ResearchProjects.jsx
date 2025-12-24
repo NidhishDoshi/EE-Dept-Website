@@ -35,7 +35,7 @@ function ResearchProjectsData() {
       <div class="row justify-content-center mb-4">
         <div class="col-lg-8 text-center">
           <h2 class="section-title mt-6">
-            R&D Sponsored Projects in the Past Five Years
+            R&D Sponsored Projects
           </h2>
         </div>
       </div>
@@ -45,10 +45,9 @@ function ResearchProjectsData() {
             <tr>
               <th class="border border-gray-400 px-4 py-2">S. No.</th>
               <th class="border border-gray-400 px-4 py-2">Project Title</th>
-              <th class="border border-gray-400 px-4 py-2">Project Area</th>
               <th class="border border-gray-400 px-4 py-2">Duration</th>
-              <th class="border border-gray-400 px-4 py-2">PI</th>
-              <th class="border border-gray-400 px-4 py-2">Co-PI</th>
+              <th class="border border-gray-400 px-4 py-2">Investigator(s)</th>
+              <th class="border border-gray-400 px-4 py-2">Funding Agency</th>
               <th class="border border-gray-400 px-4 py-2">Status</th>
             </tr>
           </thead>
@@ -59,7 +58,6 @@ function ResearchProjectsData() {
                 <td class="border border-gray-400 px-4 py-2">
                   {project.Title}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">{project.Area}</td>
                 <td class="border border-gray-400 px-4 py-2">
                   {project.Duration}
                 </td>
@@ -81,7 +79,7 @@ function ResearchProjectsData() {
       <div class="row justify-content-center mb-4">
         <div class="col-lg-8 text-center">
           <h2 class="section-title mt-14 ">
-            Consultancy/Testing Projects in the past five years
+            Consultancy/Testing Projects
           </h2>
         </div>
       </div>
@@ -92,7 +90,6 @@ function ResearchProjectsData() {
             <tr>
               <th class="border border-gray-400 px-4 py-2">S. No.</th>
               <th class="border border-gray-400 px-4 py-2">Title</th>
-              <th class="border border-gray-400 px-4 py-2">Area</th>
               <th class="border border-gray-400 px-4 py-2">Duration</th>
               <th class="border border-gray-400 px-4 py-2">PI</th>
               <th class="border border-gray-400 px-4 py-2">Co-PI</th>
@@ -106,7 +103,6 @@ function ResearchProjectsData() {
                 <td class="border border-gray-400 px-4 py-2">
                   {project.Title}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">{project.Area}</td>
                 <td class="border border-gray-400 px-4 py-2">
                   {project.Duration}
                 </td>

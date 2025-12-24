@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { getGalleryImages } from "../api/api";
+import { constant } from "../constant/constant";
 
-const STRAPI_URL = "http://localhost:1337";
+const STRAPI_ROOT = constant.baseURL.replace("/api", "");
 
 export default function useGalleryImages() {
   return useQuery({
@@ -9,17 +10,13 @@ export default function useGalleryImages() {
     queryFn: async () => {
       const data = await getGalleryImages();
 
-      // return data.map((item) => ({
-      //   url: item.Image?.url,
-      //   description: item.description || "No description available",
-      // }));
       return data
         .filter((item) => item.Image && item.Image.url)
         .map((item) => {
           const url = item.Image.url;
           return {
             // If URL is relative, prepend Strapi base URL
-            url: url.startsWith("http") ? url : `${STRAPI_URL}${url}`,
+            url: url.startsWith("http") ? url : `${STRAPI_ROOT}${url}`,
             description: item.Description || "No description available",
           };
         });
