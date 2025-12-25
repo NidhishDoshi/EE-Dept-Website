@@ -1,8 +1,10 @@
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
+import Fuse from "fuse.js";
 
 import GlobalError from "../components/GlobalError";
 import Loading from "../components/Loading";
 import usePeopleInfo from "../hooks/usePeopleInfo";
+import { useDebounce } from "../hooks/useDebounce";
 import { constant } from "../constant/constant";
 
 const STRAPI_ROOT = constant.baseURL.replace("/api", "");
@@ -123,17 +125,35 @@ const fallback = (
 // People Page Component
 const People = () => {
   const { data, isLoading, isError, error } = usePeopleInfo();
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const people = useMemo(() => {
     if (!Array.isArray(data)) return [];
     return getPeopleData(data);
   }, [data]);
 
+  // Filter people based on fuzzy search query
+  const filteredPeople = useMemo(() => {
+    if (!debouncedSearchQuery.trim()) return people;
+    
+    // Configure Fuse.js for fuzzy search
+    const fuse = new Fuse(people, {
+      keys: ['name', 'title', 'email', 'expertise', 'office', 'education'],
+      threshold: 0.4, // 0 = exact match, 1 = match anything
+      includeScore: true,
+      minMatchCharLength: 2,
+    });
+    
+    const results = fuse.search(debouncedSearchQuery);
+    return results.map(result => result.item);
+  }, [people, debouncedSearchQuery]);
+
   if (isLoading) return <Loading />;
   if (isError) return <GlobalError error={error} />;
 
   const filterByRole = (role) =>
-    people.filter((person) => person.role === role);
+    filteredPeople.filter((person) => person.role === role);
 
   const leadership = filterByRole("Department Leadership");
   const facultyMembers = [...leadership, ...filterByRole("Faculty Members")];
@@ -152,8 +172,42 @@ const People = () => {
           Electrical Engineering.
         </p>
       </div>
+
       {/* Navigation Cards */}
       <QuickNavigation />
+
+      {/* Search Bar */}
+      <div className="mb-8 flex justify-end">
+        <div className="w-full sm:w-96">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i className="fas fa-search text-gray-400"></i>
+            </div>
+            <input
+              type="text"
+              placeholder="Search by name, title, email, expertise..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                aria-label="Clear search"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            )}
+          </div>
+          {debouncedSearchQuery && (
+            <p className="text-right mt-2 text-sm text-gray-600">
+              Found {filteredPeople.length} result{filteredPeople.length !== 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+      </div>
+
       {/* Leadership Section */}
       {/* <Suspense fallback={fallback}>
         <DepartmentLeadership leadership={leadership} />

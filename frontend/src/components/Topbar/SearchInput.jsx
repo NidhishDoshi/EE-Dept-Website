@@ -7,28 +7,35 @@ import useClientSideSearch from "../../hooks/useClientSideSearch.js";
 // Map API collection names to your Frontend Route prefixes
 export const slugMap = {
   peoples: "people",
-  research: "research",
+  research: "research/labs",
   publications: "publications",
   events: "events",
   news: "news",
-  "about-pages": "about", // Example: /about/history
+  "about-pages": "about",
   admission: "admission",
+  admissions: "admissions",
   faculty: "faculty",
   students: "students",
   alumni: "alumni",
   contact: "contact",
   "join-as-faculty": "join-as-faculty",
+  projects: "research/projects",
 };
 
 export default function SearchInput() {
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedQuery = useDebounce(searchQuery, 300);
+  const debouncedQuery = useDebounce(searchQuery, 250); // Faster response time
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
 
   const { data: searchResults, isLoading } = useClientSideSearch(
     debouncedQuery.trim()
   );
+
+  // Calculate total results for display
+  const totalResults = searchResults 
+    ? Object.values(searchResults).reduce((sum, items) => sum + (items?.length || 0), 0)
+    : 0;
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -102,6 +109,7 @@ export default function SearchInput() {
           isLoading={isLoading}
           searchQuery={searchQuery}
           searchResults={searchResults}
+          totalResults={totalResults}
           handleResultClick={handleResultClick}
         />
       )}
@@ -114,6 +122,7 @@ function SearchResultDropdown({
   isLoading,
   searchQuery,
   searchResults,
+  totalResults,
   handleResultClick,
 }) {
   const resultsRef = useRef(null);
@@ -187,10 +196,20 @@ function SearchResultDropdown({
       ref={resultsRef}
       className="absolute top-[calc(100%+8px)] right-0 bg-white border border-gray-100 rounded-lg shadow-xl w-[320px] max-h-[400px] overflow-hidden flex flex-col"
     >
-      <div className="px-4 py-2 border-b border-gray-50 bg-gray-50/50">
-        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-          Results
-        </span>
+      <div className="px-4 py-2 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+        <div>
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+            Search Results
+          </span>
+          <span className="text-[10px] text-gray-400 ml-2">
+            (Typo-tolerant)
+          </span>
+        </div>
+        {totalResults > 0 && (
+          <span className="text-xs font-semibold text-primary-600">
+            {totalResults} found
+          </span>
+        )}
       </div>
 
       <div className="overflow-y-auto">
@@ -204,26 +223,46 @@ function SearchResultDropdown({
               className="border-b border-gray-50 last:border-b-0"
             >
               <div className="px-4 py-1.5 bg-gray-50/30">
-                <h4 className="text-[10px] font-bold text-primary-600 uppercase tracking-wide">
+                <h4 className="text-[10px] font-bold text-primary-600 uppercase tracking-wide flex items-center gap-1">
                   {category.replace(/_/g, " ")}
+                  <span className="text-gray-400 font-normal">
+                    ({items.length})
+                  </span>
                 </h4>
               </div>
 
               <div>
-                {items.slice(0, 4).map((item) => {
+                {items.slice(0, 4).map((item, index) => {
                   // FIX 3: Construct the valid URL
-                  // 1. Get the prefix (e.g., 'people')
-                  const routePrefix = slugMap[category] || category;
+                  let fullPath;
+                  let displayTitle;
+                  let displaySubtitle = null;
 
-                  // 2. Get the item slug (fallback to id if slug is missing)
-                  const itemSlug = item.slug || item.id;
+                  // Handle navigation items differently (they have a direct link)
+                  if (category === "navigation") {
+                    fullPath = item.link || "/";
+                    displayTitle = item.title || "Untitled";
+                    displaySubtitle = item.page;
+                  } else {
+                    // Handle API data (peoples, news, research, etc.)
+                    // 1. Get the prefix (e.g., 'people')
+                    const routePrefix = slugMap[category] || category;
 
-                  // 3. Combine: /people/john-doe
-                  const fullPath = `/${routePrefix}/${itemSlug}`;
+                    // 2. Get the item slug (fallback to id if slug is missing)
+                    const itemSlug = item.slug || item.Slug || item.id;
 
-                  // Determine display title based on category
-                  const displayTitle =
-                    item.Name || item.Title || item.title || "Untitled";
+                    // 3. Combine: /people/john-doe
+                    fullPath = `/${routePrefix}/${itemSlug}`;
+
+                    // Determine display title based on category
+                    displayTitle =
+                      item.Name || item.Title || item.title || "Untitled";
+                    
+                    // Set subtitle for peoples
+                    if (category === "peoples" && item.Designation) {
+                      displaySubtitle = item.Designation;
+                    }
+                  }
 
                   return (
                     <button
@@ -232,15 +271,23 @@ function SearchResultDropdown({
                         e.preventDefault(); // Prevent blur
                         handleResultClick(fullPath);
                       }}
-                      className="w-full px-4 py-2.5 text-left hover:bg-gray-50 transition-colors duration-150 group block"
+                      className="w-full px-4 py-2.5 text-left hover:bg-gray-50 transition-colors duration-150 group block relative"
                     >
-                      <div className="text-sm font-medium text-gray-700 group-hover:text-primary-700 truncate">
+                      {/* Relevance indicator - top results get a badge */}
+                      {index === 0 && (
+                        <div className="absolute top-2 right-2">
+                          <span className="text-[9px] bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded-full font-semibold">
+                            Best Match
+                          </span>
+                        </div>
+                      )}
+                      <div className="text-sm font-medium text-gray-700 group-hover:text-primary-700 truncate pr-16">
                         {displayTitle}
                       </div>
-                      {/* Optional: Show role or extra info for people */}
-                      {category === "peoples" && item.Designation && (
+                      {/* Show subtitle if available */}
+                      {displaySubtitle && (
                         <div className="text-xs text-gray-400 truncate">
-                          {item.Designation}
+                          {displaySubtitle}
                         </div>
                       )}
                     </button>

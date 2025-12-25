@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
 import { useMemo } from "react";
 import axiosInstance from "../api/axiosInstance"; // Ensure this path is correct
+import searchData from "../searchData"; // Import static search data
 
 // 1. DATA FETCHER
 // Fetches all data from your collections at once.
@@ -14,7 +15,11 @@ const fetchAllData = async () => {
       key: "research",
       url: "/research-labs?populate=*&pagination[limit]=1000",
     },
-    // Add other collections here if needed (e.g., /events, /recruiters)
+    {
+      key: "events",
+      url: "/talk-and-events?populate=*&pagination[limit]=1000",
+    },
+    // Add other collections here if needed
   ];
 
   // Run all requests in parallel
@@ -34,10 +39,15 @@ const fetchAllData = async () => {
   );
 
   // Transform array into a single object: { peoples: [...], news: [...] }
-  return responses.reduce((acc, curr) => {
+  const apiData = responses.reduce((acc, curr) => {
     acc[curr.key] = curr.data;
     return acc;
   }, {});
+
+  // Add static search data for navigation
+  apiData.navigation = searchData;
+
+  return apiData;
 };
 
 export default function useClientSideSearch(query) {
@@ -58,45 +68,70 @@ export default function useClientSideSearch(query) {
 
     const results = {};
 
-    // Helper function to configure Fuse for each collection
+    // Helper function to configure Fuse for each collection with advanced fuzzy matching
     const performSearch = (collectionName, keys) => {
       const items = allData[collectionName];
       if (!items || items.length === 0) return;
 
       const fuse = new Fuse(items, {
-        keys: keys, // Which fields to search (e.g., Name, Title)
-        threshold: 0.3, // 0.0=Perfect Match, 1.0=Match Anything. 0.3 is good for typos.
-        distance: 100, // How close the match needs to be
+        keys,
+        threshold: 0.4, // Allow some typos
+        distance: 200,
         minMatchCharLength: 2,
+        ignoreLocation: true,
+        findAllMatches: true,
+        useExtendedSearch: true,
+        includeScore: true,
+        includeMatches: true,
+        shouldSort: true,
       });
 
-      const hits = fuse.search(query);
+      const hits = fuse.search(query.trim());
+      if (hits.length === 0) return;
 
-      if (hits.length > 0) {
-        // Un-nest the data so the UI gets a clean object
-        results[collectionName] = hits.map((hit) => {
-          const item = hit.item;
-          const attrs = item.attributes || item; // Handle Strapi structure
-
-          return {
-            id: item.id,
-            ...attrs,
-            // Create a consistent 'slug' or identifier for navigation
-            slug: attrs.slug || attrs.Slug || item.id,
-          };
-        });
-      }
+      results[collectionName] = hits
+        .map((hit) => ({
+          ...hit.item,
+          _searchScore: hit.score ?? 1,
+          _matches: hit.matches ?? [],
+        }))
+        .sort((a, b) => a._searchScore - b._searchScore);
     };
 
     // --- CONFIGURE YOUR SEARCH FIELDS HERE ---
     // Collection Name (must match keys in fetchAllData) -> Fields to search
     performSearch("peoples", [
-      "attributes.Name",
-      "attributes.Designation",
-      "attributes.Role",
+      { name: "attributes.Name", weight: 2 },
+      { name: "attributes.Designation", weight: 1.5 },
+      { name: "attributes.Role", weight: 1.5 },
+      { name: "attributes.Email", weight: 1 },
+      { name: "attributes.Domain", weight: 1 },
     ]);
-    performSearch("news", ["attributes.Title", "attributes.Description"]);
-    performSearch("research", ["attributes.Name", "attributes.Type"]);
+
+    performSearch("news", [
+      { name: "attributes.Title", weight: 2 },
+      { name: "attributes.description", weight: 1 },
+    ]);
+
+    performSearch("research", [
+      { name: "attributes.Name", weight: 2 },
+      { name: "attributes.Type", weight: 1.5 },
+      { name: "attributes.description", weight: 1 },
+    ]);
+
+    performSearch("events", [
+      { name: "attributes.Title", weight: 2 },
+      { name: "attributes.Speaker", weight: 1.5 },
+      { name: "attributes.description", weight: 1 },
+      { name: "attributes.venue", weight: 0.8 },
+    ]);
+
+    // Search static navigation data (pages, sections)
+    performSearch("navigation", [
+      { name: "title", weight: 2 },
+      { name: "page", weight: 1.5 },
+      { name: "content", weight: 1 },
+    ]);
 
     return results;
   }, [query, allData]);
