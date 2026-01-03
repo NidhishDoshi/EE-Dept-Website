@@ -4,23 +4,49 @@ import { v4 } from "uuid";
 import { useDebounce } from "../../hooks/useDebounce.js";
 // import useSearchResult from "../../hooks/useSearchResult.js";
 import useClientSideSearch from "../../hooks/useClientSideSearch.js";
-// Map API collection names to your Frontend Route prefixes
-export const slugMap = {
-  peoples: "people",
-  research: "research/labs",
-  publications: "publications",
-  events: "events",
-  news: "news",
-  "about-pages": "about",
-  admission: "admission",
-  admissions: "admissions",
-  faculty: "faculty",
-  students: "students",
-  alumni: "alumni",
-  contact: "contact",
-  "join-as-faculty": "join-as-faculty",
-  projects: "research/projects",
+// Configure where each search category should navigate.
+// Set useSlug=true only if a real detail route exists; otherwise go to the list page.
+export const searchRouteMap = {
+  navigation: { basePath: "/", useSlug: false, getPath: (item) => item.link || "/" },
+  peoples: { 
+    basePath: "/people", 
+    useSlug: false, 
+    getPath: (item) => {
+      const name = item?.attributes?.Name || item?.Name || item?.name || item?.title || "";
+      return name ? `/people?search=${encodeURIComponent(name)}` : "/people";
+    }
+  },
+  news: { basePath: "/allnews", useSlug: false },
+  events: { basePath: "/allTalksEvents", useSlug: false },
+  research: { basePath: "/research/labs", useSlug: false },
+  projects: { basePath: "/research/projects", useSlug: false },
+  "about-pages": { basePath: "/about", useSlug: false },
+  admission: { basePath: "/admissions", useSlug: false },
+  admissions: { basePath: "/admissions", useSlug: false },
+  contact: { basePath: "/contact", useSlug: false },
+  "join-as-faculty": { basePath: "/join-as-faculty", useSlug: false },
 };
+
+// Build the safest available target URL for a search hit.
+export function buildResultPath(category, item) {
+  const config = searchRouteMap[category];
+
+  if (config?.getPath) {
+    return config.getPath(item);
+  }
+
+  if (config) {
+    if (config.useSlug) {
+      const slug = item?.slug || item?.Slug || item?.documentId || item?.id;
+      return slug ? `${config.basePath}/${slug}` : config.basePath;
+    }
+    return config.basePath;
+  }
+
+  // Fallback: best effort using category and slug
+  const slug = item?.slug || item?.Slug || item?.documentId || item?.id;
+  return slug ? `/${category}/${slug}` : `/${category}`;
+}
 
 export default function SearchInput() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,10 +86,7 @@ export default function SearchInput() {
     setShowResults(false);
   };
 
-  // FIX 1: Navigation Logic
-  // We now accept the Full Path instead of just a generic slug
   const handleResultClick = (fullPath) => {
-    console.log("Navigating to:", fullPath);
     navigate(fullPath);
     handleCloseSearch();
   };
@@ -233,35 +256,25 @@ function SearchResultDropdown({
 
               <div>
                 {items.slice(0, 4).map((item, index) => {
-                  // FIX 3: Construct the valid URL
+                  // Construct the target path using known routes
                   let fullPath;
                   let displayTitle;
                   let displaySubtitle = null;
 
-                  // Handle navigation items differently (they have a direct link)
-                  if (category === "navigation") {
-                    fullPath = item.link || "/";
+                  fullPath = buildResultPath(category, item);
+
+                  // Determine display title based on category and data structure
+                  // Handle both direct properties and nested attributes
+                  if (category === "peoples") {
+                    displayTitle = item.attributes?.Name || item.Name || "Untitled";
+                    displaySubtitle = item.attributes?.Designation || item.Designation || null;
+                  } else if (category === "navigation") {
                     displayTitle = item.title || "Untitled";
-                    displaySubtitle = item.page;
+                    displaySubtitle = item.page || null;
                   } else {
-                    // Handle API data (peoples, news, research, etc.)
-                    // 1. Get the prefix (e.g., 'people')
-                    const routePrefix = slugMap[category] || category;
-
-                    // 2. Get the item slug (fallback to id if slug is missing)
-                    const itemSlug = item.slug || item.Slug || item.id;
-
-                    // 3. Combine: /people/john-doe
-                    fullPath = `/${routePrefix}/${itemSlug}`;
-
-                    // Determine display title based on category
-                    displayTitle =
-                      item.Name || item.Title || item.title || "Untitled";
-                    
-                    // Set subtitle for peoples
-                    if (category === "peoples" && item.Designation) {
-                      displaySubtitle = item.Designation;
-                    }
+                    // For other categories (news, events, research, etc.)
+                    displayTitle = item.attributes?.Title || item.attributes?.Name || 
+                                   item.Title || item.Name || item.title || "Untitled";
                   }
 
                   return (
@@ -301,9 +314,14 @@ function SearchResultDropdown({
 
       <div className="p-2 border-t border-gray-100 bg-gray-50">
         <button
-          onClick={() =>
-            handleResultClick(`/search?q=${encodeURIComponent(searchQuery)}`)
-          }
+          type="button"
+          onMouseDown={(e) => {
+            // Prevent the input blur from cancelling navigation
+            e.preventDefault();
+            const trimmedQuery = searchQuery.trim();
+            if (!trimmedQuery) return;
+            handleResultClick(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+          }}
           className="w-full text-xs font-medium text-center text-primary-600 hover:text-primary-700 py-1"
         >
           View all results

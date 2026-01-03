@@ -75,8 +75,8 @@ export default function useClientSideSearch(query) {
 
       const fuse = new Fuse(items, {
         keys,
-        threshold: 0.4, // Allow some typos
-        distance: 200,
+        threshold: 0.4,
+        distance: 100,
         minMatchCharLength: 2,
         ignoreLocation: true,
         findAllMatches: true,
@@ -89,13 +89,147 @@ export default function useClientSideSearch(query) {
       const hits = fuse.search(query.trim());
       if (hits.length === 0) return;
 
+      const queryLower = query.trim().toLowerCase();
+      const queryWords = queryLower.split(/\s+/);
+      
       results[collectionName] = hits
-        .map((hit) => ({
-          ...hit.item,
-          _searchScore: hit.score ?? 1,
-          _matches: hit.matches ?? [],
-        }))
-        .sort((a, b) => a._searchScore - b._searchScore);
+        .map((hit) => {
+          const item = hit.item;
+          let bestScore = hit.score ?? 1;
+          let bestMatchType = 'fuzzy';
+          let matchedFieldWeight = 1;
+          let matchPosition = Infinity;
+          let matchedFieldName = '';
+          
+          // Evaluate each searchable field
+          keys.forEach(keyConfig => {
+            const keyName = keyConfig.name || keyConfig;
+            const fieldWeight = keyConfig.weight || 1;
+            const keyParts = keyName.split('.');
+            let value = item;
+            
+            // Navigate nested properties
+            for (const part of keyParts) {
+              value = value?.[part];
+            }
+            
+            if (value && typeof value === 'string') {
+              const valueLower = value.toLowerCase();
+              const valueWords = valueLower.split(/\s+/);
+              
+              // 1. Exact field match (score: 0.0001)
+              if (valueLower === queryLower) {
+                const score = 0.0001 / fieldWeight;
+                if (score < bestScore) {
+                  bestScore = score;
+                  bestMatchType = 'exact';
+                  matchedFieldWeight = fieldWeight;
+                  matchPosition = 0;
+                  matchedFieldName = keyName;
+                }
+              }
+              // 2. Exact word match (score: 0.001)
+              else if (valueWords.includes(queryLower)) {
+                const score = 0.001 / fieldWeight;
+                const pos = valueLower.indexOf(queryLower);
+                if (score < bestScore || (score === bestScore && pos < matchPosition)) {
+                  bestScore = score;
+                  bestMatchType = 'word_exact';
+                  matchedFieldWeight = fieldWeight;
+                  matchPosition = pos;
+                  matchedFieldName = keyName;
+                }
+              }
+              // 3. Starts with query (score: 0.01)
+              else if (valueLower.startsWith(queryLower)) {
+                const score = 0.01 / fieldWeight;
+                if (score < bestScore) {
+                  bestScore = score;
+                  bestMatchType = 'startswith';
+                  matchedFieldWeight = fieldWeight;
+                  matchPosition = 0;
+                  matchedFieldName = keyName;
+                }
+              }
+              // 4. Word starts with query (score: 0.02)
+              else if (valueWords.some(word => word.startsWith(queryLower))) {
+                const score = 0.02 / fieldWeight;
+                const pos = valueLower.indexOf(queryLower);
+                if (score < bestScore || (score === bestScore && pos < matchPosition)) {
+                  bestScore = score;
+                  bestMatchType = 'word_startswith';
+                  matchedFieldWeight = fieldWeight;
+                  matchPosition = pos;
+                  matchedFieldName = keyName;
+                }
+              }
+              // 5. Contains query (score: 0.05)
+              else if (valueLower.includes(queryLower)) {
+                const pos = valueLower.indexOf(queryLower);
+                const score = (0.05 + (pos / value.length) * 0.05) / fieldWeight;
+                if (score < bestScore || (score === bestScore && pos < matchPosition)) {
+                  bestScore = score;
+                  bestMatchType = 'contains';
+                  matchedFieldWeight = fieldWeight;
+                  matchPosition = pos;
+                  matchedFieldName = keyName;
+                }
+              }
+              // 6. Multi-word match (all query words present)
+              else if (queryWords.length > 1 && queryWords.every(qw => valueLower.includes(qw))) {
+                const score = 0.08 / fieldWeight;
+                if (score < bestScore) {
+                  bestScore = score;
+                  bestMatchType = 'multiword';
+                  matchedFieldWeight = fieldWeight;
+                  matchPosition = valueLower.indexOf(queryWords[0]);
+                  matchedFieldName = keyName;
+                }
+              }
+            }
+          });
+          
+          // Use fuzzy score if no better match found, adjusted by best field weight
+          if (bestMatchType === 'fuzzy') {
+            bestScore = (hit.score ?? 1) / matchedFieldWeight;
+          }
+          
+          return {
+            ...item,
+            _searchScore: bestScore,
+            _matches: hit.matches ?? [],
+            _matchType: bestMatchType,
+            _matchPosition: matchPosition,
+            _matchedFieldName: matchedFieldName,
+            _fieldWeight: matchedFieldWeight,
+          };
+        })
+        .sort((a, b) => {
+          // Primary: Sort by score (lower is better)
+          if (Math.abs(a._searchScore - b._searchScore) > 0.00001) {
+            return a._searchScore - b._searchScore;
+          }
+          // Secondary: Sort by match type priority
+          const typePriority = { 
+            exact: 0, 
+            word_exact: 1, 
+            startswith: 2, 
+            word_startswith: 3, 
+            contains: 4, 
+            multiword: 5, 
+            fuzzy: 6 
+          };
+          const typeComp = (typePriority[a._matchType] || 6) - (typePriority[b._matchType] || 6);
+          if (typeComp !== 0) return typeComp;
+          
+          // Tertiary: Sort by field weight (higher weight = better match)
+          if (a._fieldWeight !== b._fieldWeight) {
+            return b._fieldWeight - a._fieldWeight;
+          }
+          
+          // Quaternary: Sort by match position (earlier is better)
+          return (a._matchPosition || 0) - (b._matchPosition || 0);
+        });
     };
 
     // --- CONFIGURE YOUR SEARCH FIELDS HERE ---

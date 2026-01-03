@@ -1,4 +1,5 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Fuse from "fuse.js";
 
 import GlobalError from "../components/GlobalError";
@@ -125,8 +126,17 @@ const fallback = (
 // People Page Component
 const People = () => {
   const { data, isLoading, isError, error } = usePeopleInfo();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  // Read search query from URL on mount
+  useEffect(() => {
+    const urlSearchQuery = searchParams.get("search");
+    if (urlSearchQuery) {
+      setSearchQuery(urlSearchQuery);
+    }
+  }, [searchParams]);
 
   const people = useMemo(() => {
     if (!Array.isArray(data)) return [];

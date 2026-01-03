@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { v4 } from "uuid";
 import Loading from "../components/Loading";
-import { slugMap } from "../components/Topbar/SearchInput";
+import { buildResultPath } from "../components/Topbar/SearchInput";
 import useSearchResult from "../hooks/useSearchResult";
 
 function SearchResults() {
@@ -14,10 +14,7 @@ function SearchResults() {
   const navigate = useNavigate();
 
   const handleResultClick = (category, item) => {
-    const routePrefix = slugMap[category] || category;
-    const itemSlug = item.Slug || item.slug || item.id;
-    const fullPath = `/${routePrefix}/${itemSlug}`;
-    console.log("Navigating to:", fullPath);
+    const fullPath = buildResultPath(category, item);
     navigate(fullPath);
   };
 
