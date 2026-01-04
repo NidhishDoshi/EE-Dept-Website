@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { useTalksAndEvents } from "../../hooks/useTalksAndEvents";
+import useTalksAndEventsFromSheets from "../../hooks/useTalksAndEventsFromSheets";
 import { Link } from "react-router-dom"; // ✅ Required for routing
 
 const TalkCard = ({
@@ -64,7 +64,7 @@ export default function TalksAndEventsSection() {
     data: talksAndEvents,
     isLoading: talksLoading,
     error: talksError,
-  } = useTalksAndEvents();
+  } = useTalksAndEventsFromSheets();
 
   const topTalks = talksAndEvents?.slice(0, 3); // Show only top 3
 
@@ -94,7 +94,18 @@ export default function TalksAndEventsSection() {
           </div>
         ) : topTalks?.length > 0 ? (
           topTalks.map((item) => (
-            <TalkCard key={`talks-${item?.id || v4()}`} {...item} />
+            <TalkCard 
+              key={`talks-${item?.documentId || v4()}`}
+              id={item.documentId}
+              title={item.Title}
+              speaker={item.Speaker}
+              designation={item.Designation}
+              venue={item.Venue}
+              time={item.Time}
+              date={item.Date}
+              description={item.Description}
+              link={item.Link}
+            />
           ))
         ) : (
           <p className="text-gray-500">

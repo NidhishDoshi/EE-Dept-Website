@@ -2,14 +2,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { v4 } from "uuid";
 import Loading from "../components/Loading";
 import { buildResultPath } from "../components/Topbar/SearchInput";
-import useSearchResult from "../hooks/useSearchResult";
+import useClientSideSearch from "../hooks/useClientSideSearch";
 
 function SearchResults() {
   const [searchParams] = useSearchParams();
 
   const query = searchParams.get("q");
 
-  const { data: results, isLoading, isError, error } = useSearchResult(query);
+  const { data: results, isLoading } = useClientSideSearch(query);
 
   const navigate = useNavigate();
 
@@ -19,48 +19,6 @@ function SearchResults() {
   };
 
   if (isLoading) return <Loading />;
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[40vh]">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg shadow-md flex flex-col items-center">
-          <svg
-            className="w-12 h-12 mb-2 text-red-500"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <title>Error</title>
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 8v4m0 4h.01"
-            />
-          </svg>
-          <h2 className="text-xl font-bold mb-1">
-            Oops! Something went wrong.
-          </h2>
-          <p className="mb-2 text-center">
-            We couldn't fetch your search results. Please try again later.
-          </p>
-          <details className="text-xs text-gray-600">
-            <summary className="cursor-pointer">Show error details</summary>
-            <pre className="whitespace-pre-wrap">
-              {error?.message || String(error)}
-            </pre>
-          </details>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
@@ -94,22 +52,30 @@ function SearchResults() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map((item, index) => {
                   // Determine what to display based on category
+                  // Support both flat structure (Google Sheets) and nested attributes (Strapi)
                   let title, subtitle, description;
                   
                   if (category === "peoples") {
-                    title = item.Name || item.title || "Unnamed";
-                    subtitle = item.Designation || item.Role || "";
-                    description = item.Email || "";
+                    title = item.Name || item.attributes?.Name || item.title || "Unnamed";
+                    subtitle = item.Designation || item.attributes?.Designation || item.Role || item.attributes?.Role || "";
+                    description = item.Email || item.attributes?.Email || "";
                   } else if (category === "news" || category === "events") {
-                    title = item.Title || item.title || "Untitled";
+                    title = item.Title || item.attributes?.Title || item.title || "Untitled";
                     subtitle = "";
-                    description = item.description?.substring(0, 100) || "";
+                    description = item.description || item.attributes?.description || "";
+                    if (description) description = description.substring(0, 100);
                   } else if (category === "research" || category === "projects") {
-                    title = item.Name || item.Title || item.title || "Untitled";
-                    subtitle = item.Type || "";
-                    description = item.description?.substring(0, 100) || "";
+                    title = item.Name || item.attributes?.Name || item.Title || item.attributes?.Title || item.title || "Untitled";
+                    subtitle = item.Type || item.attributes?.Type || "";
+                    description = item.description || item.attributes?.description || "";
+                    if (description) description = description.substring(0, 100);
+                  } else if (category === "navigation") {
+                    title = item.title || item.Title || "Untitled";
+                    subtitle = item.page || "";
+                    description = item.content || "";
+                    if (description) description = description.substring(0, 100);
                   } else {
-                    title = item.Title || item.Name || item.title || "Untitled";
+                    title = item.Title || item.attributes?.Title || item.Name || item.attributes?.Name || item.title || "Untitled";
                     subtitle = "";
                     description = "";
                   }

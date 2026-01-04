@@ -1,61 +1,55 @@
+import useFAQFromSheets from "../../hooks/useFAQFromSheets";
+
+const formatAnswerWithEmails = (text) => {
+  if (!text) return '';
+  
+  // Regular expression to match email addresses
+  const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+  
+  // Replace emails with mailto links
+  const formattedText = text.replace(emailRegex, (email) => {
+    return `<a href="mailto:${email}" class="text-indigo-600 hover:underline">${email}</a>`;
+  });
+  
+  return formattedText;
+};
+
 export default function ContactUsFaq() {
+  const { data: faqs, isLoading, isError } = useFAQFromSheets();
+
   return (
     <div className="mt-10 bg-white rounded-lg shadow-sm p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200">
         Frequently Asked Questions
       </h2>
-      <div className="space-y-4">
-        <div>
-          <h3 className="font-semibold text-gray-800">
-            What are the office hours of the EECE department?
-          </h3>
-          <p className="text-gray-700 mt-1">
-            The department office is open Monday to Friday from 9:00 AM to 6:00
-            PM. The office remains closed on weekends and public holidays.
-          </p>
+      
+      {isLoading ? (
+        <div className="text-center py-4">
+          <p className="text-gray-500">Loading FAQs...</p>
         </div>
-        <div>
-          <h3 className="font-semibold text-gray-800">
-            How can I schedule a visit to the department?
-          </h3>
-          <p className="text-gray-700 mt-1">
-            To schedule a visit, please email{" "}
-            <a
-              href="mailto:office.ee@iitdh.ac.in"
-              className="text-indigo-600 hover:underline"
-            >
-              office.ee@iitdh.ac.in
-            </a>{" "}
-            with your details and purpose of visit at least one week in advance.
-          </p>
+      ) : isError ? (
+        <div className="text-center py-4">
+          <p className="text-red-500">Error loading FAQs. Please try again later.</p>
         </div>
-        {/* <div>
-          <h3 className="font-semibold text-gray-800">
-            Is there accommodation available for visitors?
-          </h3>
-         <p className="text-gray-700 mt-1">
-            IIT DHARWAD has a guest house facility for official visitors. For
-            booking inquiries, please contact{" "}
-            <a
-              href="mailto:guesthouse@iitdh.ac.in"
-              className="text-indigo-600 hover:underline"
-            >
-              guesthouse@iitdh.ac.in
-            </a>
-            .
-          </p>
-        </div>*/}
-        <div>
-          <h3 className="font-semibold text-gray-800">
-            How do I contact a specific faculty member?
-          </h3>
-          <p className="text-gray-700 mt-1">
-            Faculty contact information is available on the People section of
-            our website. You can directly email the faculty member using their
-            individual email addresses.
-          </p>
+      ) : (
+        <div className="space-y-4">
+          {faqs && faqs.length > 0 ? (
+            faqs.map((faq) => (
+              <div key={faq.id}>
+                <h3 className="font-semibold text-gray-800">
+                  {faq.Question}
+                </h3>
+                <p 
+                  className="text-gray-700 mt-1" 
+                  dangerouslySetInnerHTML={{ __html: formatAnswerWithEmails(faq.Answer) }} 
+                />
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">No FAQs available at the moment.</p>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

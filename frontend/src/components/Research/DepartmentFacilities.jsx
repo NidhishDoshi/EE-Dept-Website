@@ -1,15 +1,13 @@
 import React from "react";
-import useResearchData from "../../hooks/useResearchData";
+import useResearchLabsFromSheets from "../../hooks/useResearchLabsFromSheets";
 import GlobalError from "../GlobalError";
 import Loading from "../Loading";
 import Section from "../Section";
 
-// ADJUST THIS: Your Strapi Backend URL (usually port 1337)
-const STRAPI_BASE_URL = "http://localhost:1337";
-
 // --- REUSABLE LAB CARD COMPONENT ---
 const LabCard = ({ name, description, images }) => {
   const [lightboxImage, setLightboxImage] = React.useState(null);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   // Close lightbox on ESC key
   React.useEffect(() => {
@@ -38,62 +36,134 @@ const LabCard = ({ name, description, images }) => {
 
   return (
     <>
-      <div className="w-full bg-white rounded-lg shadow-sm p-4 hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left border-l-4 border-secondary-500 hover:border-primary-500 hover:-translate-y-1">
-        {/* 1. Name */}
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">{name}</h3>
+      <div className="w-full bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left border-l-4 border-secondary-500 hover:border-primary-500 hover:-translate-y-1">
+        {/* 1. Name - Clickable to toggle view */}
+        <h3 
+          className="text-xl font-semibold text-gray-800 mb-4 cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-between group"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>{name}</span>
+          <svg 
+            className={`w-5 h-5 text-gray-400 group-hover:text-primary-500 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </h3>
 
-        {/* 2. Image Gallery (Picture) */}
-        <div className="w-full h-96 bg-gray-50 rounded mb-3 relative overflow-hidden border border-gray-100 group">
-          {images && images.length > 0 ? (
-            <>
-              <div 
-                className="flex h-full"
-                style={{
-                  width: `${extendedImages.length * (100 / 3)}%`,
-                  animation: images.length > 1 ? 'continuousScroll 20s linear infinite' : 'none'
-                }}
-              >
-                {extendedImages.map((img, index) => (
-                  <div 
-                    key={`img-${index}`} 
-                    className="h-full relative overflow-hidden flex-shrink-0 cursor-pointer"
-                    style={{ width: `${100 / extendedImages.length}%` }}
-                    onClick={() => setLightboxImage(img)}
-                  >
-                    <img
-                      src={img}
-                      alt={`${name} - Image ${(index % images.length) + 1}`}
-                      className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
-                      loading="lazy"
-                    />
-                  </div>
-                ))}
-              </div>
-              
-              <style>{`
-                @keyframes continuousScroll {
-                  0% {
-                    transform: translateX(0);
-                  }
-                  100% {
-                    transform: translateX(-${100 / 3}%);
-                  }
-                }
-                
-                .group:hover [style*="continuousScroll"] {
-                  animation-play-state: paused;
-                }
-              `}</style>
-            </>
+        {/* 2. Image Gallery - Toggle between Carousel and Grid */}
+        <div className="overflow-hidden transition-all duration-500 ease-in-out">
+          {isExpanded ? (
+            // Grid View
+            <div className="w-full mb-4 animate-fadeIn">
+              {images && images.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {images.map((img, index) => (
+                    <div 
+                      key={`img-${index}`} 
+                      className="relative overflow-hidden rounded-lg border border-gray-200 cursor-pointer group aspect-video bg-gray-50 transform transition-all duration-300"
+                      style={{ 
+                        animation: `slideIn 0.3s ease-out ${index * 0.05}s both`
+                      }}
+                      onClick={() => setLightboxImage(img)}
+                    >
+                      <img
+                        src={img}
+                        alt={`${name} - Image ${index + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-48 bg-gray-50 rounded-lg border border-gray-200">
+                  <span className="text-gray-400 text-sm">No Image Available</span>
+                </div>
+              )}
+            </div>
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <span className="text-gray-400 text-xs">No Image Available</span>
+            // Carousel View
+            <div className="w-full h-80 bg-gray-50 rounded-lg mb-4 relative overflow-hidden border border-gray-200 group animate-fadeIn">
+              {images && images.length > 0 ? (
+                <>
+                  <div 
+                    className="flex h-full gap-3"
+                    style={{
+                      width: `${extendedImages.length * (100 / 3)}%`,
+                      animation: images.length > 1 ? 'continuousScroll 25s linear infinite' : 'none'
+                    }}
+                  >
+                    {extendedImages.map((img, index) => (
+                      <div 
+                        key={`img-${index}`} 
+                        className="h-full relative overflow-hidden flex-shrink-0 cursor-pointer rounded-lg"
+                        style={{ width: `calc(${100 / extendedImages.length}% - 0.75rem)` }}
+                        onClick={() => setLightboxImage(img)}
+                      >
+                        <img
+                          src={img}
+                          alt={`${name} - Image ${(index % images.length) + 1}`}
+                          className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+                          loading="lazy"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <style>{`
+                    @keyframes continuousScroll {
+                      0% {
+                        transform: translateX(0);
+                      }
+                      100% {
+                        transform: translateX(-${100 / 3}%);
+                      }
+                    }
+                    
+                    @keyframes fadeIn {
+                      from {
+                        opacity: 0;
+                      }
+                      to {
+                        opacity: 1;
+                      }
+                    }
+                    
+                    @keyframes slideIn {
+                      from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                      }
+                      to {
+                        opacity: 1;
+                        transform: translateY(0);
+                      }
+                    }
+                    
+                    .animate-fadeIn {
+                      animation: fadeIn 0.4s ease-out;
+                    }
+                    
+                    .group:hover [style*="continuousScroll"] {
+                      animation-play-state: paused;
+                    }
+                  `}</style>
+                </>
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <span className="text-gray-400 text-sm">No Image Available</span>
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {/* 3. Description */}
-        <div className="text-gray-600 text-sm flex-grow leading-relaxed">
+        <div className="text-gray-700 text-sm flex-grow leading-relaxed">
           {description || (
             <span className="text-gray-400 italic">No description provided.</span>
           )}
@@ -128,7 +198,7 @@ const LabCard = ({ name, description, images }) => {
 };
 
 function DepartmentFacilitiesData() {
-  const { data: researchLabs, isLoading, isError, error } = useResearchData();
+  const { data: researchLabs, isLoading, isError, error } = useResearchLabsFromSheets();
 
   if (isLoading) return <Loading />;
   if (isError) return <GlobalError error={error} />;
@@ -154,24 +224,12 @@ function DepartmentFacilitiesData() {
   const processLabData = (item) => {
     const attrs = getAttrs(item);
 
-    // Image Logic - Handle multiple images from 'Picture' field
-    const pictureData = attrs.Picture?.data || attrs.Picture || [];
+    // Image Logic - Handle multiple images from 'Picture' field (Google Sheets format)
+    const pictureData = attrs.Picture || [];
     let imageUrls = [];
 
     if (Array.isArray(pictureData)) {
-      // Multiple images
-      imageUrls = pictureData.map((img) => {
-        const imgAttrs = img?.attributes || img;
-        const url = imgAttrs?.url;
-        return url && url.startsWith("/") ? `${STRAPI_BASE_URL}${url}` : url;
-      }).filter(Boolean);
-    } else if (pictureData && typeof pictureData === 'object') {
-      // Single image wrapped in data object
-      const imgAttrs = pictureData?.attributes || pictureData;
-      const url = imgAttrs?.url;
-      if (url) {
-        imageUrls = [url.startsWith("/") ? `${STRAPI_BASE_URL}${url}` : url];
-      }
+      imageUrls = pictureData.map((img) => img?.url).filter(Boolean);
     }
 
     return {

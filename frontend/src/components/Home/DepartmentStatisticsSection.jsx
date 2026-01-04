@@ -1,5 +1,5 @@
 import React from "react";
-import { useDepartmentStatistics } from "../../hooks/useDepartmentStatistics";
+import useStatisticsFromSheets from "../../hooks/useStatisticsFromSheets";
 import {
   BarChart,
   Bar,
@@ -26,18 +26,18 @@ const statItems = [
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 const StatCard = ({ label, value }) => (
-  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-all duration-300 group h-full flex flex-col justify-center">
-    <div className="text-4xl font-bold text-primary-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+  <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-all duration-300 group h-full flex flex-col justify-center">
+    <div className="text-3xl sm:text-4xl font-bold text-primary-600 mb-2 group-hover:scale-110 transition-transform duration-300">
       {value != null ? `${value}+` : "-"}
     </div>
-    <div className="text-sm font-semibold text-gray-800 uppercase tracking-wide mb-1">
+    <div className="text-xs sm:text-sm font-semibold text-gray-800 uppercase tracking-wide mb-1">
       {label}
     </div>
   </div>
 );
 
 export default function DepartmentStatisticsSection() {
-  const { data: stats, isLoading, error } = useDepartmentStatistics();
+  const { data: stats, isLoading, error } = useStatisticsFromSheets();
 
   if (isLoading)
     return <div className="text-center py-8 text-gray-400">Loading...</div>;
@@ -59,41 +59,51 @@ export default function DepartmentStatisticsSection() {
     );
   }
 
+  // Helper to parse numeric values from strings
+  const parseValue = (val) => {
+    if (typeof val === "number") return val;
+    if (typeof val === "string") {
+      const num = parseFloat(val);
+      return isNaN(num) ? 0 : num;
+    }
+    return 0;
+  };
+
   const barChartData = [
-    { name: "Faculty", value: safeStats.facultyMembers || 0 },
-    { name: "Courses", value: safeStats.courses || 0 },
-    { name: "Labs", value: safeStats.researchLabs || 0 },
-    { name: "Publications", value: safeStats.publications || 0 },
+    { name: "Faculty", value: parseValue(safeStats.facultyMembers) },
+    { name: "Courses", value: parseValue(safeStats.courses) },
+    { name: "Labs", value: parseValue(safeStats.researchLabs) },
+    { name: "Publications", value: parseValue(safeStats.publications) },
   ];
 
   const pieChartData = [
-    { name: "Faculty", value: safeStats.facultyMembers || 0 },
-    { name: "Students", value: safeStats.students || 0 },
+    { name: "Faculty", value: parseValue(safeStats.facultyMembers) },
+    { name: "Students", value: parseValue(safeStats.students) },
   ];
 
   return (
-    <section className="bg-white py-8">
+    <section className="bg-white py-6 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2
-          className="text-2xl font-bold text-gray-900 mb-8 pb-2 inline-block"
+          className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 pb-2 inline-block"
           style={{ borderBottom: "2px solid rgba(255, 99, 14, 0.5)" }}
         >
           Department Statistics
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
           {statItems.map(({ key, label }) => (
             <StatCard key={key} label={label} value={safeStats[key]} />
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
           {/* Bar Chart */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6 text-center">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-6 text-center">
               Department Overview
             </h3>
-            <div className="h-[300px] w-full">
+            <div className="h-[250px] sm:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={barChartData}
@@ -111,11 +121,11 @@ export default function DepartmentStatisticsSection() {
           </div>
 
           {/* Pie Chart */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6 text-center">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-6 text-center">
               Faculty vs Students Ratio
             </h3>
-            <div className="h-[300px] w-full">
+            <div className="h-[250px] sm:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

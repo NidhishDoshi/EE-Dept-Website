@@ -12,7 +12,8 @@ export const searchRouteMap = {
     basePath: "/people", 
     useSlug: false, 
     getPath: (item) => {
-      const name = item?.attributes?.Name || item?.Name || item?.name || item?.title || "";
+      // Support both flat and nested structure
+      const name = item?.Name || item?.attributes?.Name || item?.name || item?.title || "";
       return name ? `/people?search=${encodeURIComponent(name)}` : "/people";
     }
   },
@@ -264,17 +265,17 @@ function SearchResultDropdown({
                   fullPath = buildResultPath(category, item);
 
                   // Determine display title based on category and data structure
-                  // Handle both direct properties and nested attributes
+                  // Handle both direct properties (Google Sheets) and nested attributes (Strapi)
                   if (category === "peoples") {
-                    displayTitle = item.attributes?.Name || item.Name || "Untitled";
-                    displaySubtitle = item.attributes?.Designation || item.Designation || null;
+                    displayTitle = item.Name || item.attributes?.Name || "Untitled";
+                    displaySubtitle = item.Designation || item.attributes?.Designation || null;
                   } else if (category === "navigation") {
                     displayTitle = item.title || "Untitled";
                     displaySubtitle = item.page || null;
                   } else {
                     // For other categories (news, events, research, etc.)
-                    displayTitle = item.attributes?.Title || item.attributes?.Name || 
-                                   item.Title || item.Name || item.title || "Untitled";
+                    displayTitle = item.Title || item.Name || item.attributes?.Title || 
+                                   item.attributes?.Name || item.title || "Untitled";
                   }
 
                   return (

@@ -234,29 +234,44 @@ export default function useClientSideSearch(query) {
 
     // --- CONFIGURE YOUR SEARCH FIELDS HERE ---
     // Collection Name (must match keys in fetchAllData) -> Fields to search
+    // Support both flat structure (Google Sheets) and nested attributes (Strapi)
     performSearch("peoples", [
+      { name: "Name", weight: 2 },
       { name: "attributes.Name", weight: 2 },
+      { name: "Designation", weight: 1.5 },
       { name: "attributes.Designation", weight: 1.5 },
+      { name: "Role", weight: 1.5 },
       { name: "attributes.Role", weight: 1.5 },
+      { name: "Email", weight: 1 },
       { name: "attributes.Email", weight: 1 },
+      { name: "Domain", weight: 1 },
       { name: "attributes.Domain", weight: 1 },
     ]);
 
     performSearch("news", [
+      { name: "Title", weight: 2 },
       { name: "attributes.Title", weight: 2 },
+      { name: "description", weight: 1 },
       { name: "attributes.description", weight: 1 },
     ]);
 
     performSearch("research", [
+      { name: "Name", weight: 2 },
       { name: "attributes.Name", weight: 2 },
+      { name: "Type", weight: 1.5 },
       { name: "attributes.Type", weight: 1.5 },
+      { name: "description", weight: 1 },
       { name: "attributes.description", weight: 1 },
     ]);
 
     performSearch("events", [
+      { name: "Title", weight: 2 },
       { name: "attributes.Title", weight: 2 },
+      { name: "Speaker", weight: 1.5 },
       { name: "attributes.Speaker", weight: 1.5 },
+      { name: "description", weight: 1 },
       { name: "attributes.description", weight: 1 },
+      { name: "venue", weight: 0.8 },
       { name: "attributes.venue", weight: 0.8 },
     ]);
 

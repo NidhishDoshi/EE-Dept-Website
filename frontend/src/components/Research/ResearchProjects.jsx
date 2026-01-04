@@ -1,4 +1,4 @@
-import useResearchProjectsData from "../../hooks/useResearchProjectsData";
+import useResearchProjectsFromSheets from "../../hooks/useResearchProjectsFromSheets";
 import GlobalError from "../GlobalError";
 import Loading from "../Loading";
 
@@ -8,7 +8,7 @@ function ResearchProjectsData() {
     isLoading: isLoadingResearchProject,
     isError: isErrorResearchProject,
     error: errorResearchProject,
-  } = useResearchProjectsData();
+  } = useResearchProjectsFromSheets();
 
   if (isLoadingResearchProject) return <Loading />;
   if (isErrorResearchProject)
@@ -32,42 +32,42 @@ function ResearchProjectsData() {
 
   return (
     <>
-      <div class="row justify-content-center mb-4">
-        <div class="col-lg-8 text-center">
-          <h2 class="section-title mt-6">
+      <div className="row justify-content-center mb-4">
+        <div className="col-lg-8 text-center">
+          <h2 className="section-title mt-6">
             R&D Sponsored Projects
           </h2>
         </div>
       </div>
-      <div class="overflow-x-auto">
-        <table class="table table-bordered table-striped table-hover min-w-full">
-          <thead class="thead-dark">
+      <div className="overflow-x-auto">
+        <table className="table table-bordered table-striped table-hover min-w-full">
+          <thead className="thead-dark">
             <tr>
-              <th class="border border-gray-400 px-4 py-2">S. No.</th>
-              <th class="border border-gray-400 px-4 py-2">Project Title</th>
-              <th class="border border-gray-400 px-4 py-2">Duration</th>
-              <th class="border border-gray-400 px-4 py-2">Investigator(s)</th>
-              <th class="border border-gray-400 px-4 py-2">Funding Agency</th>
-              <th class="border border-gray-400 px-4 py-2">Status</th>
+              <th className="border border-gray-400 px-4 py-2">S. No.</th>
+              <th className="border border-gray-400 px-4 py-2">Project Title</th>
+              <th className="border border-gray-400 px-4 py-2">Duration</th>
+              <th className="border border-gray-400 px-4 py-2">Investigator(s)</th>
+              <th className="border border-gray-400 px-4 py-2">Funding Agency</th>
+              <th className="border border-gray-400 px-4 py-2">Status</th>
             </tr>
           </thead>
           <tbody>
             {sponsoredProjects.map((project, idx) => (
               <tr key={project.id}>
-                <td class="border border-gray-400 px-4 py-2">{idx + 1}</td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">{idx + 1}</td>
+                <td className="border border-gray-400 px-4 py-2">
                   {project.Title}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.Duration}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.PI || "-"}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.CoPI || "-"}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.CurrentStatus || "-"}
                 </td>
               </tr>
@@ -76,43 +76,43 @@ function ResearchProjectsData() {
         </table>
       </div>
 
-      <div class="row justify-content-center mb-4">
-        <div class="col-lg-8 text-center">
-          <h2 class="section-title mt-14 ">
+      <div className="row justify-content-center mb-4">
+        <div className="col-lg-8 text-center">
+          <h2 className="section-title mt-14 ">
             Consultancy/Testing Projects
           </h2>
         </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="table table-bordered table-striped min-w-full">
-          <thead class="thead-dark">
+      <div className="overflow-x-auto">
+        <table className="table table-bordered table-striped min-w-full">
+          <thead className="thead-dark">
             <tr>
-              <th class="border border-gray-400 px-4 py-2">S. No.</th>
-              <th class="border border-gray-400 px-4 py-2">Title</th>
-              <th class="border border-gray-400 px-4 py-2">Duration</th>
-              <th class="border border-gray-400 px-4 py-2">PI</th>
-              <th class="border border-gray-400 px-4 py-2">Co-PI</th>
-              <th class="border border-gray-400 px-4 py-2">Status</th>
+              <th className="border border-gray-400 px-4 py-2">S. No.</th>
+              <th className="border border-gray-400 px-4 py-2">Title</th>
+              <th className="border border-gray-400 px-4 py-2">Duration</th>
+              <th className="border border-gray-400 px-4 py-2">PI</th>
+              <th className="border border-gray-400 px-4 py-2">Co-PI</th>
+              <th className="border border-gray-400 px-4 py-2">Status</th>
             </tr>
           </thead>
           <tbody>
             {consultancyProjects.map((project, idx) => (
               <tr key={project.id}>
-                <td class="border border-gray-400 px-4 py-2">{idx + 1}</td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">{idx + 1}</td>
+                <td className="border border-gray-400 px-4 py-2">
                   {project.Title}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.Duration}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.PI || "-"}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.CoPI || "-"}
                 </td>
-                <td class="border border-gray-400 px-4 py-2">
+                <td className="border border-gray-400 px-4 py-2">
                   {project.CurrentStatus || "-"}
                 </td>
               </tr>

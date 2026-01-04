@@ -1,7 +1,7 @@
 import { v4 } from "uuid";
-import { useNews } from "../hooks/useNews";
+import useNewsFromSheets from "../hooks/useNewsFromSheets";
 
-const NewsCard = ({ title, description, link }) => (
+const NewsCard = ({ Title, Description, Link }) => (
   <div
     className="
       w-full
@@ -11,16 +11,16 @@ const NewsCard = ({ title, description, link }) => (
     "
   >
     {/* The 'line-clamp-2' class has been removed to prevent trimming the title */}
-    <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+    <h3 className="text-xl font-semibold text-gray-900">{Title}</h3>
     <div
       className="text-gray-600 text-base mt-4 flex-grow whitespace-pre-wrap"
-      dangerouslySetInnerHTML={{ __html: description }}
+      dangerouslySetInnerHTML={{ __html: Description }}
     />
-    {link && (
+    {Link && (
       <div className="mt-4 text-sm text-gray-600">
         For more details,{" "}
         <a
-          href={link}
+          href={Link}
           target="_blank"
           rel="noopener noreferrer"
           className="text-orange-500 hover:text-orange-600 font-medium no-underline"
@@ -41,7 +41,7 @@ const NewsLoading = () => (
 );
 
 export default function NewsPage() {
-  const { data: news, isLoading: newsLoading, error: newsError } = useNews();
+  const { data: news, isLoading: newsLoading, error: newsError } = useNewsFromSheets();
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

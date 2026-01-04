@@ -8,7 +8,7 @@ export default function DepartmentAddress() {
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold text-gray-800 mb-2">
-              Department of Computer Science & Engineering
+              Department of Electrical, Electronics and Communication Engineering
             </h3>
             <p className="text-gray-700">
               Indian Institute of Technology DHARWAD
@@ -23,9 +23,9 @@ export default function DepartmentAddress() {
               Department Head
             </h3>
             <p className="text-gray-700">
-              A1 - 501, Head of Computer Science and Engineering
+              A1 - 501, Head of Electrical, Electronics and Communication Engineering
               <br />
-              Prof Ramchandra Phawade
+              Prof. Naveen Kadayinti	
          {/*     <br />
               Phone: +91 8362309624*/}
             </p>

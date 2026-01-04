@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import useGalleryImages from "../../hooks/useGalleryImages";
+import useGalleryFromSheets from "../../hooks/useGalleryFromSheets";
 import GlobalError from "../GlobalError";
 import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline'; // Import icons
 
 const Gallery = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
 
-  const { data: galleryImages, isLoading, isError, error } = useGalleryImages();
+  const { data: galleryImages, isLoading, isError, error } = useGalleryFromSheets();
 
   // Prevent background scrolling when modal is open
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useCarouselImages from "../../hooks/useCarouselImages";
+import useCarouselFromSheets from "../../hooks/useCarouselFromSheets";
 import GlobalError from "../GlobalError";
 
 // Import Google Fonts
@@ -20,7 +20,7 @@ const CustomCarousel = () => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  const { data: images, isLoading, isError, error } = useCarouselImages();
+  const { data: images, isLoading, isError, error } = useCarouselFromSheets();
 
   // Auto-advance slides every 5 seconds
   useEffect(() => {

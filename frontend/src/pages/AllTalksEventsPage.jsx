@@ -1,9 +1,7 @@
 import { v4 } from "uuid";
-import { useTalksAndEvents } from "../hooks/useTalksAndEvents";
+import useTalksAndEventsFromSheets from "../hooks/useTalksAndEventsFromSheets";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
-const STRAPI_BASE_URL = "http://localhost:1337";
 
 const TalkCard = ({
   id,
@@ -103,7 +101,7 @@ const TalksLoading = () => (
 );
 
 export default function AllTalksEventsPage() {
-  const { data: talks, isLoading, error } = useTalksAndEvents();
+  const { data: talks, isLoading, error } = useTalksAndEventsFromSheets();
   const location = useLocation();
 
   useEffect(() => {
@@ -123,28 +121,27 @@ export default function AllTalksEventsPage() {
     }
   }, [location.hash, talks]);
 
-  // Group talks by eventStatus
-  const ongoingTalks = talks?.filter(talk => talk.eventStatus === "Ongoing") || [];
-  const pastTalks = talks?.filter(talk => talk.eventStatus === "Past") || [];
+  // Group talks by Status
+  const ongoingTalks = talks?.filter(talk => talk.Status === "Ongoing" || talk.Status === "ongoing") || [];
+  const pastTalks = talks?.filter(talk => talk.Status === "Past" || talk.Status === "past") || [];
 
   const renderTalks = (talksList) => {
     return talksList.map((item) => {
-      const imageData = item.image?.data || item.image;
-      const imageAttrs = imageData?.attributes || imageData;
-      const imageUrl = imageAttrs?.url ? 
-        (imageAttrs.url.startsWith('/') ? `${STRAPI_BASE_URL}${imageAttrs.url}` : imageAttrs.url) : 
-        null;
-      
-      const posterData = item.poster?.data || item.poster;
-      const posterAttrs = posterData?.attributes || posterData;
-      const posterUrl = posterAttrs?.url ? 
-        (posterAttrs.url.startsWith('/') ? `${STRAPI_BASE_URL}${posterAttrs.url}` : posterAttrs.url) : 
-        null;
+      const imageUrl = item.Image?.url || null;
+      const posterUrl = item.Poster?.url || null;
       
       return (
         <TalkCard 
-          key={`talk-${item.id || v4()}`} 
-          {...item} 
+          key={`talk-${item.documentId || v4()}`} 
+          id={item.documentId}
+          title={item.Title}
+          speaker={item.Speaker}
+          designation={item.Designation}
+          venue={item.Venue}
+          time={item.Time}
+          date={item.Date}
+          description={item.Description}
+          link={item.Link}
           imageUrl={imageUrl}
           posterUrl={posterUrl}
         />

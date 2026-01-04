@@ -28,7 +28,7 @@ const Contact = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-primary-500">Contact Us</h1>
         <p className="text-gray-600 mt-3 text-lg">
-          Get in touch with the Department of Computer Science and Engineering
+          Get in touch with the Department of Electrical, Electronics and Communication Engineering
           at IIT DHARWAD
         </p>
       </div>

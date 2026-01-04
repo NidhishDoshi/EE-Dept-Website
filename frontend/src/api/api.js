@@ -10,8 +10,68 @@ export const getNews = async () => {
   return data?.data;
 };
 
+// Fetch News from Google Sheets
+export const getNewsFromSheets = async () => {
+  const { data } = await axiosInstance.get("/news-sheets");
+  return data?.data;
+};
+
+// Fetch People from Google Sheets
+export const getPeopleFromSheets = async () => {
+  const { data } = await axiosInstance.get("/people-sheets");
+  return data?.data;
+};
+
 export const getTalksAndEvents = async () => {
   const { data } = await axiosInstance.get("/talk-and-events?populate=*");
+  return data?.data;
+};
+
+// Fetch Talks and Events from Google Sheets
+export const getTalksAndEventsFromSheets = async () => {
+  const { data } = await axiosInstance.get("/talks-events-sheets");
+  return data?.data;
+};
+
+// Fetch Research Projects from Google Sheets
+export const getResearchProjectsFromSheets = async () => {
+  const { data } = await axiosInstance.get("/research-projects-sheets");
+  return data?.data;
+};
+
+// Fetch Research Labs from Google Sheets
+export const getResearchLabsFromSheets = async () => {
+  const { data } = await axiosInstance.get("/research-labs-sheets");
+  return data?.data;
+};
+
+// Fetch Gallery from Google Sheets
+export const getGalleryFromSheets = async () => {
+  const { data } = await axiosInstance.get("/gallery-sheets");
+  return data?.data;
+};
+
+// Fetch Carousel from Google Sheets
+export const getCarouselFromSheets = async () => {
+  const { data } = await axiosInstance.get("/carousel-sheets");
+  return data?.data;
+};
+
+// Fetch FAQ from Google Sheets
+export const getFAQFromSheets = async () => {
+  const { data } = await axiosInstance.get("/faq-sheets");
+  return data?.data;
+};
+
+// Fetch Contact Points from Google Sheets
+export const getContactPointsFromSheets = async () => {
+  const { data } = await axiosInstance.get("/contact-points-sheets");
+  return data?.data;
+};
+
+// Fetch Statistics from Google Sheets
+export const getStatisticsFromSheets = async () => {
+  const { data } = await axiosInstance.get("/statistics-sheets");
   return data?.data;
 };
 
@@ -26,7 +86,7 @@ export const getAcademicRules = async () => {
 };
 
 export const getAcademicFaq = async () => {
-  const { data } = await axiosInstance.get("/acad-faqs");
+  const { data } = await axiosInstance.get("/faq");
   return data?.data?.map((item) => ({
     question: item.Question,
     answer: item.Answer,
@@ -102,4 +162,10 @@ export const getJoinAsFacultyData = async () => {
   const { data } = await axiosInstance.get("/join-as-faculty-pages");
   // Sort by Level field and return the data array
   return data?.data?.sort((a, b) => a.Level - b.Level) || [];
+};
+
+// Fetch About page data from Google Sheets
+export const getAboutPageDataFromSheets = async () => {
+  const { data } = await axiosInstance.get("/about");
+  return data?.data;
 };

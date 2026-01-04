@@ -4,7 +4,7 @@ import Fuse from "fuse.js";
 
 import GlobalError from "../components/GlobalError";
 import Loading from "../components/Loading";
-import usePeopleInfo from "../hooks/usePeopleInfo";
+import usePeopleFromSheets from "../hooks/usePeopleFromSheets";
 import { useDebounce } from "../hooks/useDebounce";
 import { constant } from "../constant/constant";
 
@@ -83,13 +83,8 @@ const getPeopleData = (data) => {
 
     let imageUrl = null;
     if (person.Image) {
-        // Handle both flattened and nested structures just in case
-        const imgData = person.Image.data ? person.Image.data.attributes : person.Image;
-        if (imgData && imgData.url) {
-             imageUrl = imgData.url.startsWith("http") 
-            ? imgData.url 
-            : `${STRAPI_ROOT}${imgData.url}`;
-        }
+        // Handle Google Sheets image structure
+        imageUrl = person.Image.url || null;
     }
 
     const base = {
@@ -125,7 +120,7 @@ const fallback = (
 
 // People Page Component
 const People = () => {
-  const { data, isLoading, isError, error } = usePeopleInfo();
+  const { data, isLoading, isError, error } = usePeopleFromSheets();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -152,7 +147,7 @@ const People = () => {
       keys: ['name', 'title', 'email', 'expertise', 'office', 'education'],
       threshold: 0.4, // 0 = exact match, 1 = match anything
       includeScore: true,
-      minMatchCharLength: 2,
+      minMatchCharLength: 1, // Allow single character searches
     });
     
     const results = fuse.search(debouncedSearchQuery);

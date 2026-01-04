@@ -30,11 +30,6 @@ const Navbar = ({ closeMenu, isMobile = false }) => {
     },
     { to: "/join-as-faculty", label: "Join Us" },
     { to: "/contact", label: "Contact" },
-    {
-      href: "http://localhost:1337/admin",
-      label: "Internal",
-      external: true,
-    },
   ];
 
   // Mobile navigation

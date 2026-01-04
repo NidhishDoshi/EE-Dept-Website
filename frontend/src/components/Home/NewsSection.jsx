@@ -1,21 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { v4 } from "uuid";
-import { useNews } from "../../hooks/useNews";
+import useNewsFromSheets from "../../hooks/useNewsFromSheets";
 import { Link } from "react-router-dom"; // ← make sure this is imported
 
-const NewsCard = ({ title, date, description, link }) => (
+const NewsCard = ({ Title, Description, Link: linkUrl }) => (
   <div className="w-full bg-white rounded-lg shadow-sm p-4 hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left border-l-4 border-secondary-500 hover:border-primary-500 hover:-translate-y-1">
-    <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-    <p className="text-sm text-secondary-500 font-medium mt-1">{date}</p>
+    <h3 className="text-lg font-semibold text-gray-800">{Title}</h3>
     <div
       className="text-gray-600 text-sm mt-2 flex-grow whitespace-pre-wrap"
-      dangerouslySetInnerHTML={{ __html: description }}
+      dangerouslySetInnerHTML={{ __html: Description }}
     />
-    {link && (
+    {linkUrl && (
       <div className="mt-3 text-xs text-gray-600">
         For more details,{" "}
         <a
-          href={link}
+          href={linkUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-orange-500 hover:text-orange-600 font-medium underline decoration-orange-500/30 hover:decoration-orange-600"
@@ -36,7 +35,7 @@ const NewsLoading = () => (
 );
 
 export default function NewsSection() {
-  const { data: news, isLoading: newsLoading, error: newsError } = useNews();
+  const { data: news, isLoading: newsLoading, error: newsError } = useNewsFromSheets();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
   const timeoutRef = useRef(null);
