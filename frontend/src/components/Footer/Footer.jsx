@@ -101,7 +101,7 @@ const Footer = () => {
               &copy; {currentYear} Department of EE & ECE, IIT Dharwad. All
               rights reserved.
             </p>
-            <p className="text-white/50 text-xs">Last Updated: {lastUpdated}</p>
+            <p className="text-white/50 text-xs">Designed & Developed by the IITDh Coding Club</p>
           </div>
         </div>
       </div>

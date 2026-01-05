@@ -99,10 +99,10 @@ const CustomCarousel = () => {
             <img
               src={slide.url}
               alt={slide.heading || `Slide ${index + 1}`}
-              className="absolute w-full h-full object-fill"
+              className="absolute w-full h-full object-fill z-0"
             />
             {/* Overlay Content */}
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent flex flex-col justify-center items-start px-12 sm:px-20">
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent flex flex-col justify-center items-start px-12 sm:px-20 z-10 pointer-events-none">
               {slide.heading && (
                 <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-2 md:mb-4 drop-shadow-lg text-orange-600 tracking-tight leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {slide.heading}
@@ -113,19 +113,23 @@ const CustomCarousel = () => {
                   {slide.description}
                 </p>
               )}
-              <div className="flex gap-3 md:gap-4">
-                {slide.button1?.label && (
+              <div className="flex gap-3 md:gap-4 pointer-events-auto">
+                {slide.button1?.label && slide.button1?.link && (
                   <a
-                    href={slide.button1.link}
-                    className="bg-orange-600 hover:bg-orange-700 text-white text-sm md:text-base px-4 py-2 md:px-6 md:py-3 rounded-md font-semibold transition-colors shadow-lg"
+                    href={slide.button1.link.startsWith('http') ? slide.button1.link : `https://${slide.button1.link}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-orange-600 hover:bg-orange-700 text-white text-sm md:text-base px-4 py-2 md:px-6 md:py-3 rounded-md font-semibold transition-colors shadow-lg cursor-pointer"
                   >
                     {slide.button1.label}
                   </a>
                 )}
-                {slide.button2?.label && (
+                {slide.button2?.label && slide.button2?.link && (
                   <a
-                    href={slide.button2.link}
-                    className="bg-orange-600 hover:bg-orange-700 text-white text-sm md:text-base px-4 py-2 md:px-6 md:py-3 rounded-md font-semibold transition-colors shadow-lg"
+                    href={slide.button2.link.startsWith('http') ? slide.button2.link : `https://${slide.button2.link}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-orange-600 hover:bg-orange-700 text-white text-sm md:text-base px-4 py-2 md:px-6 md:py-3 rounded-md font-semibold transition-colors shadow-lg cursor-pointer"
                   >
                     {slide.button2.label}
                   </a>

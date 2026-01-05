@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useDynamicPages } from "../../hooks/useDynamicPages";
 
 const Navbar = ({ closeMenu, isMobile = false }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const { data: dynamicPages = [] } = useDynamicPages();
 
   const handleLinkClick = () => {
     if (closeMenu) closeMenu();
@@ -31,6 +33,22 @@ const Navbar = ({ closeMenu, isMobile = false }) => {
     { to: "/join-as-faculty", label: "Join Us" },
     { to: "/contact", label: "Contact" },
   ];
+
+  // Add dynamic pages as a dropdown if any exist
+  if (dynamicPages && dynamicPages.length > 0) {
+    const dynamicPagesDropdown = {
+      label: "More Pages",
+      to: "#",
+      dropdown: dynamicPages.map(page => ({
+        to: `/pages/${page.slug}`,
+        label: page.name
+          .replace(/_image$/i, '')
+          .replace(/_folder$/i, '')
+          .replace(/_table$/i, '')
+      }))
+    };
+    navItems.push(dynamicPagesDropdown);
+  }
 
   // Mobile navigation
   if (isMobile) {
@@ -86,6 +104,55 @@ const Navbar = ({ closeMenu, isMobile = false }) => {
                     </svg>
                   </span>
                 </a>
+              ) : item.dropdown ? (
+                <div>
+                  <button
+                    onClick={() => setOpenDropdown(openDropdown === index ? null : index)}
+                    className="w-full flex items-center justify-between px-6 py-3 text-gray-700 hover:bg-primary-50 hover:text-primary-500 font-medium transition-colors duration-200 border-l-4 border-transparent hover:border-primary-500"
+                  >
+                    {item.label}
+                    <svg
+                      className={`h-5 w-5 transition-transform ${openDropdown === index ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {openDropdown === index && (
+                    <ul className="bg-gray-50">
+                      {item.dropdown.map((subitem, subidx) => (
+                        <li key={subidx}>
+                          {subitem.external ? (
+                            <a
+                              href={subitem.to}
+                              className="block pl-12 pr-6 py-2 text-gray-600 hover:bg-primary-50 hover:text-primary-500 text-sm"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={handleLinkClick}
+                            >
+                              {subitem.label}
+                            </a>
+                          ) : (
+                            <NavLink
+                              to={subitem.to}
+                              className="block pl-12 pr-6 py-2 text-gray-600 hover:bg-primary-50 hover:text-primary-500 text-sm"
+                              onClick={handleLinkClick}
+                            >
+                              {subitem.label}
+                            </NavLink>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               ) : (
                 <NavLink
                   to={item.to}
@@ -117,41 +184,73 @@ const Navbar = ({ closeMenu, isMobile = false }) => {
             <li key={index} className="relative group">
               {item.dropdown ? (
                 <>
-                  <NavLink
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `block px-4 py-3 font-medium text-sm transition-all duration-200 whitespace-nowrap ${
-                        isActive
-                          ? "text-white bg-primary-700 border-b-2 border-secondary-500"
-                          : "text-white/90 hover:text-white hover:bg-primary-600"
-                      }`
-                    }
-                  >
-                    {item.label}
-                    <svg
-                      className="ml-2 h-3 w-3 inline"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  {item.to === "#" ? (
+                    <button
+                      className="block px-4 py-3 font-medium text-sm transition-all duration-200 whitespace-nowrap text-white/90 hover:text-white hover:bg-primary-600"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </NavLink>
+                      {item.label}
+                      <svg
+                        className="ml-2 h-3 w-3 inline"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                  ) : (
+                    <NavLink
+                      to={item.to}
+                      className={({ isActive }) =>
+                        `block px-4 py-3 font-medium text-sm transition-all duration-200 whitespace-nowrap ${
+                          isActive
+                            ? "text-white bg-primary-700 border-b-2 border-secondary-500"
+                            : "text-white/90 hover:text-white hover:bg-primary-600"
+                        }`
+                      }
+                    >
+                      {item.label}
+                      <svg
+                        className="ml-2 h-3 w-3 inline"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </NavLink>
+                  )}
                   <div className="absolute left-0 top-full z-10 hidden group-hover:block bg-white shadow-lg rounded-b min-w-[160px]">
                     <ul>
                       {item.dropdown.map((subitem, subidx) => (
                         <li key={subidx}>
-                          <NavLink
-                            to={subitem.to}
-                            className="block px-6 py-2 text-gray-700 hover:bg-primary-100 hover:text-primary-700 text-sm font-medium rounded transition-colors duration-150 whitespace-nowrap"
-                          >
-                            {subitem.label}
-                          </NavLink>
+                          {subitem.external ? (
+                            <a
+                              href={subitem.to}
+                              className="block px-6 py-2 text-gray-700 hover:bg-primary-100 hover:text-primary-700 text-sm font-medium rounded transition-colors duration-150 whitespace-nowrap"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {subitem.label}
+                            </a>
+                          ) : (
+                            <NavLink
+                              to={subitem.to}
+                              className="block px-6 py-2 text-gray-700 hover:bg-primary-100 hover:text-primary-700 text-sm font-medium rounded transition-colors duration-150 whitespace-nowrap"
+                            >
+                              {subitem.label}
+                            </NavLink>
+                          )}
                         </li>
                       ))}
                     </ul>

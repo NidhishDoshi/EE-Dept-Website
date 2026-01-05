@@ -169,3 +169,16 @@ export const getAboutPageDataFromSheets = async () => {
   const { data } = await axiosInstance.get("/about");
   return data?.data;
 };
+
+// Fetch all dynamic pages metadata
+export const getDynamicPages = async () => {
+  const { data } = await axiosInstance.get("/dynamic-pages");
+  return data?.data;
+};
+
+// Fetch specific dynamic page content by slug
+export const getDynamicPageBySlug = async (slug) => {
+  const { data } = await axiosInstance.get(`/pages/${slug}`);
+  return data?.data;
+};
+

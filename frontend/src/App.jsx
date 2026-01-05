@@ -24,6 +24,7 @@ const About = lazy(() => import("./pages/About"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
 const Allnews = lazy(() => import("./pages/Allnews"));
 const AllTalksEvents = lazy(() => import("./pages/AllTalksEventsPage"));
+const DynamicPage = lazy(() => import("./pages/DynamicPage"));
 
 const queryClient = new QueryClient();
 
@@ -126,6 +127,12 @@ function App() {
               <Route
                 path="/allTalksEvents"
                 element={<LazyRoute element={AllTalksEvents} />}
+              />
+              
+              {/* Dynamic Pages Route - Must be last to avoid conflicts with fixed routes */}
+              <Route
+                path="/pages/:slug"
+                element={<LazyRoute element={DynamicPage} />}
               />
             </Routes>
           </div>

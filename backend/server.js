@@ -14,6 +14,7 @@ const carouselController = require("./src/controllers/carouselController");
 const faqController = require("./src/controllers/faqController");
 const contactPointsController = require("./src/controllers/contactPointsController");
 const statisticsController = require("./src/controllers/statisticsController");
+const dynamicPagesController = require("./src/controllers/dynamicPagesController");
 
 const app = express();
 const PORT = process.env.PORT || 1337;
@@ -87,6 +88,11 @@ app.get("/api/statistics", statisticsController.getStatistics);
 app.get("/api/recruiters", (req, res) => {
   res.json({ success: true, data: [] });
 });
+
+// Dynamic pages endpoints
+app.get("/api/dynamic-pages", dynamicPagesController.getDynamicPages);
+app.get("/api/dynamic-pages/:slug", dynamicPagesController.getDynamicPageBySlug);
+app.get("/api/pages/:slug", dynamicPagesController.getDynamicPageBySlug); // Alternative shorter route
 
 // Error handling middleware
 app.use((err, req, res, next) => {
