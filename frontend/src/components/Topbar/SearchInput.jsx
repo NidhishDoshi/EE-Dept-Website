@@ -225,9 +225,6 @@ function SearchResultDropdown({
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
             Search Results
           </span>
-          <span className="text-[10px] text-gray-400 ml-2">
-            (Typo-tolerant)
-          </span>
         </div>
         {totalResults > 0 && (
           <span className="text-xs font-semibold text-primary-600">

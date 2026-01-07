@@ -81,10 +81,10 @@ const AboutPageData = () => {
               {section.Title}
             </h2>
 
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8">
               {/* Description (HTML Content) */}
               <div
-                className="flex-1 text-gray-600 leading-relaxed whitespace-pre-wrap"
+                className="flex-1 sm:w-3/4 text-gray-600 leading-relaxed whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{
                   __html:
                     description ||
@@ -94,7 +94,7 @@ const AboutPageData = () => {
 
               {/* Right Side: Video & Images */}
               {(hasImages || hasVideo) && (
-                <div className="lg:w-1/4 flex-shrink-0 flex flex-col gap-6">
+                <div className="w-full sm:w-1/4 flex-shrink-0 flex flex-col gap-3">
                   {/* Video */}
                   {hasVideo && (
                     <div
@@ -105,14 +105,16 @@ const AboutPageData = () => {
 
                   {/* Images */}
                   {hasImages && (
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="flex flex-col gap-3">
                       {images.map((img) => (
-                        <img
-                          key={img.id}
-                          src={img.url}
-                          alt={img.alternativeText || section.Title}
-                          className="rounded-lg shadow-md w-full h-auto object-cover"
-                        />
+                        <div className="w-full aspect-video rounded-lg overflow-hidden shadow-md">
+                          <img
+                            key={img.id}
+                            src={img.url}
+                            alt={img.alternativeText || section.Title}
+                            className="w-full h-full object-contain bg-gray-100"
+                          />
+                        </div>
                       ))}
                     </div>
                   )}

@@ -26,9 +26,6 @@ function SearchResults() {
         <h1 className="text-2xl font-semibold mb-2">
           Search Results for: "{query}"
         </h1>
-        <p className="text-sm text-gray-500">
-          Using advanced fuzzy matching - typos and similar terms included
-        </p>
       </div>
 
       {!results || Object.keys(results).length === 0 ? (
