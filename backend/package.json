@@ -21,6 +21,7 @@
     "express": "^5.2.1",
     "fuse.js": "^7.1.0",
     "googleapis": "^169.0.0",
+    "pm2": "^6.0.14",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",

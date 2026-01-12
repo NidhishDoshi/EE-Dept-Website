@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 // Import all controllers
@@ -17,12 +18,18 @@ const statisticsController = require("./src/controllers/statisticsController");
 const dynamicPagesController = require("./src/controllers/dynamicPagesController");
 
 const app = express();
-const PORT = process.env.PORT || 1337;
+const PORT = parseInt(process.env.PORT) || 1337;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all origins for VM deployment
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from frontend build
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Request logging
 app.use((req, res, next) => {
@@ -96,27 +103,19 @@ app.get("/api/pages/:slug", dynamicPagesController.getDynamicPageBySlug); // Alt
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error("Server error:", err);
-  res.status(500).json({
-    success: false,
-    error: err.message || "Internal server error",
-  });
+  console.error('Error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-// 404 handler
+// Serve frontend for all non-API routes (SPA fallback)
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: "Route not found",
-    path: req.path
-  });
+  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
 });
+
+// Export app before starting server
+module.exports = app;
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📊 Using Google Sheets as data source`);
-  console.log(`📝 API endpoints available at http://localhost:${PORT}/api\n`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
 });
-
-module.exports = app;

@@ -14,6 +14,10 @@ export default defineConfig({
 			gzipSize: true, // Show gzipped sizes
 		}),
 	],
+	server: {
+		host: '0.0.0.0', // Bind to all interfaces for external access
+		port: 5173,
+	},
 	css: {
 		transformer: "lightningcss",
 	},

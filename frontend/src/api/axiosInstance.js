@@ -1,8 +1,8 @@
 import axios from "axios";
 
 // 1. Define your backend URL
-// For local Strapi development, this is usually http://localhost:1337/api
-const BASE_URL = "http://localhost:1337/api";
+// Use environment variable with fallback for development
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://10.195.250.60:1337/api";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
